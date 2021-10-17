@@ -1,15 +1,29 @@
 import { useRef } from 'react'
-import { OrbitControls, TorusKnot } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Environment, OrbitControls, TorusKnot, useGLTF } from '@react-three/drei'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Suspense } from 'react'
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
 
 export default function App() {
   return (
     <Canvas>
       <color attach="background" args={['black']} />
-      <OrbitControls />
-      <Thing />
+      <Suspense fallback={null}>
+        <OrbitControls />
+        <Model />
+        <Environment preset="warehouse" background />
+      </Suspense>
     </Canvas>
   )
+}
+
+function Model() {
+  const { gl } = useThree()
+  const { scene } = useGLTF('/facecap.glb', true, true, (loader) => {
+    const ktx2Loader = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(gl)
+    loader.setKTX2Loader(ktx2Loader)
+  })
+  return <primitive object={scene} />
 }
 
 function Thing() {

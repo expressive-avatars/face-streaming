@@ -2,19 +2,22 @@
   "name": "r3f-vite",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"nodemon server/index.js\"",
     "build": "vite build",
     "serve": "vite preview"
   },
   "dependencies": {
     "@react-three/drei": "^7.12.6",
     "@react-three/fiber": "^7.0.9",
+    "express": "^4.17.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "three": "^0.133.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.2",
+    "concurrently": "^6.3.0",
+    "nodemon": "^2.0.13",
     "vite": "^2.6.3"
   }
 }

@@ -1,8 +1,9 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Environment, OrbitControls, TorusKnot, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
+import { io } from 'socket.io-client'
 
 export default function App() {
   return (
@@ -19,11 +20,32 @@ export default function App() {
 
 function Model() {
   const { gl } = useThree()
-  const { scene } = useGLTF('/facecap.glb', true, true, (loader) => {
+  const { scene, nodes } = useGLTF('/facecap.glb', true, true, (loader) => {
     const ktx2Loader = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(gl)
     loader.setKTX2Loader(ktx2Loader)
   })
+  /** @type {THREE.Mesh} */
+  const face = nodes['mesh_2']
+  useStreamedShapes((blendShapes) => {
+    // console.log(blendShapes.jawOpen)
+    for (let key in blendShapes) {
+      const i = face.morphTargetDictionary[key]
+      face.morphTargetInfluences[i] = blendShapes[key]
+    }
+  })
   return <primitive object={scene} />
+}
+
+function useStreamedShapes(fn) {
+  useEffect(() => {
+    const socket = io()
+    socket.on('connect', () => {
+      console.log('connected to socket.io server')
+    })
+    socket.on('blendShapes', (blendShapes) => {
+      fn(blendShapes)
+    })
+  }, [])
 }
 
 function Thing() {

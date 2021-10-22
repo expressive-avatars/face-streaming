@@ -2,7 +2,7 @@
   "name": "r3f-vite",
   "version": "0.0.0",
   "scripts": {
-    "dev": "concurrently \"vite\" \"nodemon server/index.js\"",
+    "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },

@@ -11,15 +11,10 @@ const io = new Server(httpServer, {
   },
 })
 
-// vite will proxy all /server requests
-const endpoint = io.of('/server')
-
 io.on('connection', (socket) => {
   console.log('a user connected')
-  socket.send('hello from server')
   socket.on('blendShapes', (blendShapes) => {
-    // socket.broadcast.emit('blendShapes', blendShapes)
-    console.log(blendShapes.jawOpen)
+    socket.broadcast.emit('blendShapes', blendShapes)
   })
 })
 

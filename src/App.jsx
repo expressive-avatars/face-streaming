@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { Environment, OrbitControls, TorusKnot, useGLTF } from '@react-three/drei'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
 import { io } from 'socket.io-client'
 
 export default function App() {
   return (
-    <Canvas>
+    <Canvas camera={{ fov: 35, position: [0, 0, 3] }}>
       <color attach="background" args={['black']} />
       <Suspense fallback={null}>
         <OrbitControls />
@@ -18,42 +17,33 @@ export default function App() {
   )
 }
 
+const avatarURL = 'https://d1a370nemizbjq.cloudfront.net/54a8ca1e-1759-4cf9-ab76-bec155d6c83c.glb'
+
 function Model() {
-  const { gl } = useThree()
-  const { scene, nodes } = useGLTF('/facecap.glb', true, true, (loader) => {
-    const ktx2Loader = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(gl)
-    loader.setKTX2Loader(ktx2Loader)
-  })
+  const { scene, nodes } = useGLTF(avatarURL)
   /** @type {THREE.Mesh} */
-  const face = nodes['mesh_2']
+  const face = nodes['Wolf3D_Head']
   useStreamedShapes((blendShapes) => {
-    // console.log(blendShapes.jawOpen)
     for (let key in blendShapes) {
       const i = face.morphTargetDictionary[key]
       face.morphTargetInfluences[i] = blendShapes[key]
     }
   })
-  return <primitive object={scene} />
+  return <primitive object={scene} position={[0, -2.4, 0]} scale={4} />
 }
 
 function useStreamedShapes(fn) {
   useEffect(() => {
-    const socket = io()
-    socket.on('connect', () => {
+    const socket = io('https://face-streaming-server.glitch.me/')
+    const onConnect = () => {
       console.log('connected to socket.io server')
-    })
-    socket.on('blendShapes', (blendShapes) => {
-      fn(blendShapes)
-    })
+    }
+    const onBlendShapes = (blendShapes) => fn(blendShapes)
+    socket.on('connect', onConnect)
+    socket.on('blendShapes', onBlendShapes)
+    return () => {
+      socket.off('connect', onConnect)
+      socket.off('blendShapes', onBlendShapes)
+    }
   }, [])
-}
-
-function Thing() {
-  const ref = useRef()
-  useFrame(() => (ref.current.rotation.y += 0.01))
-  return (
-    <TorusKnot ref={ref} args={[1, 0.3, 128, 16]}>
-      <meshNormalMaterial />
-    </TorusKnot>
-  )
 }

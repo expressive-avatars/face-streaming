@@ -11,6 +11,10 @@ const io = new Server(httpServer, {
   },
 })
 
+app.get('/', (req, res) => {
+  res.send('Server is up :)')
+})
+
 io.on('connection', (socket) => {
   console.log('a user connected')
   socket.on('blendShapes', (blendShapes) => {
@@ -18,4 +22,6 @@ io.on('connection', (socket) => {
   })
 })
 
-httpServer.listen(5000)
+httpServer.listen(5000, () => {
+  console.log('server ready on http://localhost:5000')
+})

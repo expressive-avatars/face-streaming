@@ -11,7 +11,8 @@ export default function App() {
       <Suspense fallback={null}>
         <OrbitControls />
         <Model />
-        <Environment preset="warehouse" background />
+        <ambientLight intensity={0.5} />
+        <pointLight position={3} />
       </Suspense>
     </Canvas>
   )
@@ -34,7 +35,7 @@ function Model() {
 
 function useStreamedShapes(fn) {
   useEffect(() => {
-    const socket = io('https://face-streaming-server.glitch.me/')
+    const socket = io('https://matt-backend.ngrok.io/')
     const onConnect = () => {
       console.log('connected to socket.io server')
     }

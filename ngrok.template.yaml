@@ -1,0 +1,12 @@
+authtoken: YOUR-AUTH-TOKEN
+tunnels:
+  backend:
+    proto: http
+    bind-tls: true
+    addr: 3000
+    subdomain: YOUR-FRONTEND-SUBDOMAIN
+  frontend:
+    proto: http
+    bind-tls: true
+    addr: 5000
+    subdomain: YOUR-BACKEND-SUBDOMAIN

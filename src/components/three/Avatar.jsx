@@ -10,24 +10,18 @@ import { useSocket } from '@/hooks/useSocket'
 export default function Avatar(props) {
   const { nodes, materials } = useGLTF('https://d1a370nemizbjq.cloudfront.net/54a8ca1e-1759-4cf9-ab76-bec155d6c83c.glb')
 
-  /** @type {React.RefObject<THREE.SkinnedMesh>} */
-  const head = useRef()
-
   const socket = useSocket('https://matt-backend.ngrok.io')
 
   useFacetracking((blendShapes) => {
     for (let blendShape in blendShapes) {
-      const i = head.current.morphTargetDictionary[blendShape]
-      head.current.morphTargetInfluences[i] = blendShapes[blendShape]
+      // const i = head.current.morphTargetDictionary[blendShape]
+      // nodes.Wolf3D_Head.morphTargetInfluences[i] = blendShapes[blendShape]
     }
-    if (true) {
-      const { jawOpen } = blendShapes
-      socket.volatile.emit('blendShapes', { jawOpen })
-    }
+    socket.volatile.emit('blendShapes', blendShapes)
   })
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props} dispose={null} visible={false}>
       <primitive object={nodes.Hips} />
       <skinnedMesh geometry={nodes.Wolf3D_Glasses.geometry} material={materials.Wolf3D_Glasses} skeleton={nodes.Wolf3D_Glasses.skeleton} />
       <skinnedMesh geometry={nodes.EyeLeft.geometry} material={nodes.EyeLeft.material} skeleton={nodes.EyeLeft.skeleton} />
@@ -36,7 +30,6 @@ export default function Avatar(props) {
       <skinnedMesh geometry={nodes.Wolf3D_Hands.geometry} material={nodes.Wolf3D_Hands.material} skeleton={nodes.Wolf3D_Hands.skeleton} />
       <skinnedMesh
         name="Wolf3D_Head"
-        ref={head}
         geometry={nodes.Wolf3D_Head.geometry}
         material={nodes.Wolf3D_Head.material}
         skeleton={nodes.Wolf3D_Head.skeleton}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { OrbitControls, useGLTF } from '@react-three/drei'
+import { Environment, OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { io } from 'socket.io-client'
@@ -11,8 +11,7 @@ export function Receiver() {
       <Suspense fallback={null}>
         <OrbitControls />
         <Model />
-        <ambientLight intensity={0.5} />
-        <pointLight position={3} />
+        <Environment preset="warehouse" background />
       </Suspense>
     </Canvas>
   )
@@ -23,11 +22,16 @@ const avatarURL = 'https://d1a370nemizbjq.cloudfront.net/54a8ca1e-1759-4cf9-ab76
 function Model() {
   const { scene, nodes } = useGLTF(avatarURL)
   /** @type {THREE.Mesh} */
-  const face = nodes['Wolf3D_Head']
+  const face = nodes.Wolf3D_Head
+
+  /** @type {THREE.Mesh} */
+  const teeth = nodes.Wolf3D_Teeth
+
   useStreamedShapes((blendShapes) => {
     for (let key in blendShapes) {
       const i = face.morphTargetDictionary[key]
       face.morphTargetInfluences[i] = blendShapes[key]
+      teeth.morphTargetInfluences[i] = blendShapes[key]
     }
   })
   return <primitive object={scene} position={[0, -2.4, 0]} scale={4} />

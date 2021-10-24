@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter as Router, Switch, Link, Route } from 'react-router-dom'
-import { Ios } from './components/iOS'
-import { Desktop } from './components/Desktop'
+import { Sender } from './routes/Sender'
 
 ReactDOM.render(
   <React.StrictMode>
@@ -10,19 +9,17 @@ ReactDOM.render(
       <Switch>
         <Route path="/" exact>
           <ul>
-            <Link to="/ios">
-              <li>iOS</li>
+            <Link to="/sender">
+              <li>Sender</li>
             </Link>
-            <Link to="/desktop">
-              <li>Desktop</li>
+            <Link to="/receiver">
+              <li>Receiver</li>
             </Link>
           </ul>
         </Route>
-        <Route path="/desktop">
-          <Desktop />
-        </Route>
-        <Route path="/ios">
-          <Ios />
+        <Route path="/receiver"></Route>
+        <Route path="/sender">
+          <Sender />
         </Route>
       </Switch>
     </Router>

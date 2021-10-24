@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('a user connected')
   socket.on('blendShapes', (blendShapes) => {
-    socket.broadcast.emit('blendShapes', blendShapes)
+    socket.broadcast.volatile.emit('blendShapes', blendShapes)
   })
 })
 

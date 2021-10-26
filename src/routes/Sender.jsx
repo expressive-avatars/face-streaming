@@ -1,13 +1,16 @@
 import { ARCanvas } from '@react-three/xr'
-import { Suspense, useState } from 'react'
+import { useReducer, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Fullscreen } from '@/components/dom/Fullscreen'
 import { AttachToCamera } from '@/components/three/AttachToCamera'
-import Avatar from '@/components/three/Avatar'
+import { FacetrackingSender } from '@/components/three/FacetrackingSender'
+import { FacetrackingPreview } from '@/components/three/FacetrackingPreview'
 
 export function Sender() {
   const { rootEl, DomOverlay } = useDomOverlay()
+  const [key, inc] = useReducer((x) => x + 1, 0)
+  console.log(key)
   return (
     <Fullscreen>
       <ARCanvas
@@ -17,23 +20,28 @@ export function Sender() {
         }}
         camera={{ fov: 35 }}
       >
-        <Suspense fallback={null}>
-          <AttachToCamera>
-            <group position={[0, -0.6, -1]}>
-              <Avatar />
-              <directionalLight position={3} />
-              <ambientLight intensity={0.5} />
-            </group>
-          </AttachToCamera>
-        </Suspense>
+        {/* <FacetrackingSender /> */}
+        <AttachToCamera>
+          <LogProps calibrationKey={key} />
+          <FacetrackingPreview calibrationKey={key} />
+          <directionalLight position={3} />
+          <ambientLight intensity={0.5} />
+        </AttachToCamera>
       </ARCanvas>
       <DomOverlay>
         <div style={{ position: 'absolute', inset: 0 }}>
           <div>Hello Overlay!</div>
+          <button onClick={inc}>Calibrate</button>
+          <p>Key: {key}</p>
         </div>
       </DomOverlay>
     </Fullscreen>
   )
+}
+
+function LogProps({ children, ...props }) {
+  console.log('props', props)
+  return null
 }
 
 function useDomOverlay() {

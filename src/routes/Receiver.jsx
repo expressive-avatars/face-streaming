@@ -3,6 +3,7 @@ import { Environment, OrbitControls, useGLTF } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { io } from 'socket.io-client'
+import * as THREE from 'three'
 
 export function Receiver() {
   return (
@@ -19,6 +20,8 @@ export function Receiver() {
 
 const avatarURL = 'https://d1a370nemizbjq.cloudfront.net/54a8ca1e-1759-4cf9-ab76-bec155d6c83c.glb'
 
+const mat4 = new THREE.Matrix4()
+
 function Model() {
   const { scene, nodes } = useGLTF(avatarURL)
   /** @type {THREE.Mesh} */
@@ -27,7 +30,12 @@ function Model() {
   /** @type {THREE.Mesh} */
   const teeth = nodes.Wolf3D_Teeth
 
-  useStreamedShapes((blendShapes) => {
+  /** @type {THREE.Bone} */
+  const headBone = nodes.Head
+
+  useStreamedShapes((blendShapes, matrix) => {
+    mat4.fromArray(matrix)
+    headBone.quaternion.setFromRotationMatrix(mat4)
     for (let key in blendShapes) {
       const i = face.morphTargetDictionary[key]
       face.morphTargetInfluences[i] = blendShapes[key]
@@ -43,12 +51,12 @@ function useStreamedShapes(fn) {
     const onConnect = () => {
       console.log('connected to socket.io server')
     }
-    const onBlendShapes = (blendShapes) => fn(blendShapes)
+    const onFace = ({ blendShapes, matrix }) => fn(blendShapes, matrix)
     socket.on('connect', onConnect)
-    socket.on('blendShapes', onBlendShapes)
+    socket.on('face', onFace)
     return () => {
       socket.off('connect', onConnect)
-      socket.off('blendShapes', onBlendShapes)
+      socket.off('face', onFace)
     }
   }, [])
 }

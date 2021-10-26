@@ -6,11 +6,14 @@ import { Fullscreen } from '@/components/dom/Fullscreen'
 import { AttachToCamera } from '@/components/three/AttachToCamera'
 import { FacetrackingSender } from '@/components/three/FacetrackingSender'
 import { FacetrackingPreview } from '@/components/three/FacetrackingPreview'
+import * as THREE from 'three'
 import { proxy, useSnapshot } from 'valtio'
+import { useFacetracking } from '@/hooks/useFacetracking'
 
-export const state = proxy({
-  calibrationKey: 0,
-})
+export const state = {
+  needsCalibration: false,
+  matrixOffset: new THREE.Matrix4(),
+}
 
 export function Sender() {
   const { rootEl, DomOverlay } = useDomOverlay()
@@ -24,6 +27,7 @@ export function Sender() {
         camera={{ fov: 35 }}
       >
         <FacetrackingSender />
+        <FacetrackingCalibrator />
         <AttachToCamera>
           <FacetrackingPreview />
           <directionalLight position={3} />
@@ -33,11 +37,21 @@ export function Sender() {
       <DomOverlay>
         <div style={{ position: 'absolute', inset: 0 }}>
           <div>Hello Overlay!</div>
-          <button onClick={() => state.calibrationKey++}>Calibrate</button>
+          <button onClick={() => (state.needsCalibration = true)}>Calibrate</button>
         </div>
       </DomOverlay>
     </Fullscreen>
   )
+}
+
+function FacetrackingCalibrator() {
+  useFacetracking((blendShapes, matrix) => {
+    if (state.needsCalibration) {
+      state.matrixOffset.fromArray(matrix).invert()
+      state.needsCalibration = false
+    }
+  })
+  return null
 }
 
 function RotatingMesh() {

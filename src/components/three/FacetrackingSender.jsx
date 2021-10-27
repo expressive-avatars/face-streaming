@@ -10,7 +10,7 @@ const mat4 = new THREE.Matrix4()
  * Should be placed within an <ARCanvas />
  */
 export function FacetrackingSender() {
-  const socket = useSocket('https://matt-backend.ngrok.io')
+  const socket = useSocket(import.meta.env.VITE_BACKEND)
   useFacetracking((blendShapes, matrix) => {
     mat4.fromArray(matrix).multiply(state.matrixOffset)
     socket.volatile.emit('face', { blendShapes, matrix: mat4.toArray() })

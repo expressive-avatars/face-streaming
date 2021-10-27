@@ -2,6 +2,8 @@ const express = require('express')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 
+const port = process.env.PORT || 5000
+
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
@@ -22,6 +24,6 @@ io.on('connection', (socket) => {
   })
 })
 
-httpServer.listen(5000, () => {
-  console.log('server ready on http://localhost:5000')
+httpServer.listen(port, () => {
+  console.log(`server ready on http://localhost:${port}`)
 })

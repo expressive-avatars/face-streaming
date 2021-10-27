@@ -47,7 +47,7 @@ function Model() {
 
 function useStreamedShapes(fn) {
   useEffect(() => {
-    const socket = io('https://matt-backend.ngrok.io/')
+    const socket = io(import.meta.env.VITE_BACKEND)
     const onConnect = () => {
       console.log('connected to socket.io server')
     }

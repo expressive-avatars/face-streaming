@@ -10,3 +10,8 @@ tunnels:
     bind-tls: true
     addr: 5000
     subdomain: YOUR-BACKEND-SUBDOMAIN
+  hubs:
+    proto: http
+    bind-tls: true
+    addr: 8080
+    subdomain: YOUR-HUBS-SCRIPT-SUBDOMAIN

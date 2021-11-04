@@ -5,7 +5,8 @@
     "dev": "concurrently \"vite\" \"nodemon server/index.js\"",
     "tunnel": "ngrok start --all --config ngrok.yaml",
     "build": "vite build",
-    "serve": "vite preview"
+    "build:hubs": "LIBRARY_MODE=true vite build",
+    "serve": "live-server dist --cors --port=3000 --no-browser"
   },
   "dependencies": {
     "@react-three/drei": "^7.17.1",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.5",
     "concurrently": "^6.3.0",
+    "live-server": "^1.2.1",
     "nodemon": "^2.0.14",
     "vite": "^2.6.10"
   }

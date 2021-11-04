@@ -1,12 +1,5 @@
-## Copy template
+```sh
+# .env.local
 
-```console
-npx tiged mattrossman/r3f-vite
-```
-
-## Setup and run
-
-```console
-yarn
-yarn dev
+VITE_BACKEND="https://your-backend.url"
 ```

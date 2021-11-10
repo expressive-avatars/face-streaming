@@ -13,5 +13,5 @@ tunnels:
   hubs:
     proto: http
     bind-tls: true
-    addr: 8080
+    addr: 4000
     subdomain: YOUR-HUBS-SCRIPT-SUBDOMAIN

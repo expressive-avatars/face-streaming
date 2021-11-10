@@ -8,7 +8,7 @@
     "tunnel": "ngrok start --all --config ngrok.yaml",
     "build": "vite build",
     "dev:hubs": "LIBRARY_MODE=true vite build --watch",
-    "serve:hubs": "live-server dist --cors --no-browser --quiet"
+    "serve:hubs": "live-server dist --port=4000 --cors --no-browser --quiet"
   },
   "dependencies": {
     "@react-three/drei": "^7.17.1",

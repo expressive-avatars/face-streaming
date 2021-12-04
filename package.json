@@ -2,13 +2,12 @@
   "name": "face-streaming-client",
   "version": "0.0.0",
   "scripts": {
-    "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:backend\" \"yarn dev:hubs\" \"yarn serve:hubs\"",
+    "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:backend\" \"yarn dev:hubs\"",
     "dev:frontend": "vite",
     "dev:backend": "nodemon server/index.js",
     "tunnel": "ngrok start --all --config ngrok.yaml",
     "build": "vite build",
-    "dev:hubs": "LIBRARY_MODE=true vite build --watch",
-    "serve:hubs": "live-server dist --port=4000 --cors --no-browser --quiet"
+    "dev:hubs": "LIBRARY_MODE=true vite build --watch"
   },
   "dependencies": {
     "@react-three/drei": "^7.17.1",
@@ -26,7 +25,6 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.5",
     "concurrently": "^6.3.0",
-    "live-server": "^1.2.1",
     "nodemon": "^2.0.14",
     "vite": "^2.6.10"
   }

@@ -9,6 +9,8 @@ import { FacetrackingPreview } from '@/components/three/FacetrackingPreview'
 import * as THREE from 'three'
 import { proxy, useSnapshot } from 'valtio'
 import { useFacetracking } from '@/hooks/useFacetracking'
+import { EmailInput } from '@/components/dom/EmailInput'
+import { tw } from 'twind'
 
 export const state = {
   needsCalibration: false,
@@ -17,29 +19,40 @@ export const state = {
 
 export function Sender() {
   const { rootEl, DomOverlay } = useDomOverlay()
+  const [email, setEmail] = useState()
   return (
     <Fullscreen>
-      <ARCanvas
-        sessionInit={{
-          requiredFeatures: ['worldSensing', 'dom-overlay'],
-          domOverlay: { root: rootEl },
-        }}
-        camera={{ fov: 35 }}
-      >
-        <FacetrackingSender />
-        <FacetrackingCalibrator />
-        <AttachToCamera>
-          <FacetrackingPreview />
-          <directionalLight position={3} />
-          <ambientLight intensity={0.5} />
-        </AttachToCamera>
-      </ARCanvas>
-      <DomOverlay>
-        <div style={{ position: 'absolute', inset: 0 }}>
-          <div>Hello Overlay!</div>
-          <button onClick={() => (state.needsCalibration = true)}>Calibrate</button>
-        </div>
-      </DomOverlay>
+      {email ? (
+        <>
+          <ARCanvas
+            sessionInit={{
+              requiredFeatures: ['worldSensing', 'dom-overlay'],
+              domOverlay: { root: rootEl },
+            }}
+            camera={{ fov: 35 }}
+          >
+            <FacetrackingSender email={email} />
+            <FacetrackingCalibrator />
+            <AttachToCamera>
+              <FacetrackingPreview />
+              <directionalLight position={3} />
+              <ambientLight intensity={0.5} />
+            </AttachToCamera>
+          </ARCanvas>
+          <DomOverlay>
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <button
+                className={tw`bg-blue-500 px-2 py-1 rounded text-white font-semibold m-4`}
+                onClick={() => (state.needsCalibration = true)}
+              >
+                Calibrate
+              </button>
+            </div>
+          </DomOverlay>
+        </>
+      ) : (
+        <EmailInput onChange={(v) => setEmail(v)} />
+      )}
     </Fullscreen>
   )
 }
@@ -51,21 +64,6 @@ function FacetrackingCalibrator() {
       state.needsCalibration = false
     }
   })
-  return null
-}
-
-function RotatingMesh() {
-  const snap = useSnapshot(state)
-  return (
-    <mesh position-z={-4} rotation-x={snap.calibrationKey * 0.1}>
-      <boxGeometry />
-      <meshNormalMaterial />
-    </mesh>
-  )
-}
-
-function LogProps({ children, ...props }) {
-  console.log('props', props)
   return null
 }
 

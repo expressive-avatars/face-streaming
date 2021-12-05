@@ -9,8 +9,10 @@ const mat4 = new THREE.Matrix4()
  * Sends blend shapes to socket.io server
  * Should be placed within an <ARCanvas />
  */
-export function FacetrackingSender() {
-  const socket = useSocket(import.meta.env.VITE_BACKEND)
+export function FacetrackingSender({ email }) {
+  const socket = useSocket(import.meta.env.VITE_BACKEND + '/provider', {
+    query: { email },
+  })
   useFacetracking((blendShapes, matrix) => {
     mat4.fromArray(matrix).multiply(state.matrixOffset)
     socket.volatile.emit('face', { blendShapes, matrix: mat4.toArray() })

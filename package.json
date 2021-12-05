@@ -23,6 +23,7 @@
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.3.2",
     "three": "^0.133.1",
+    "twind": "^0.16.16",
     "valtio": "^1.2.5"
   },
   "devDependencies": {

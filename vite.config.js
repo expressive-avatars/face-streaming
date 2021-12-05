@@ -10,9 +10,9 @@ export default defineConfig({
   build: {
     outDir: process.env.LIBRARY_MODE ? 'dist/lib' : 'dist/app',
     lib: process.env.LIBRARY_MODE && {
-      entry: path.resolve(__dirname, 'lib/room.js'),
+      entry: path.resolve(__dirname, 'lib/index.js'),
       formats: ['es'],
-      fileName: () => `room.js`,
+      fileName: () => `index.js`,
     },
   },
   resolve: {

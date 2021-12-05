@@ -1,5 +1,4 @@
-```sh
-# .env.local
+# Rooms
 
-VITE_BACKEND="https://your-backend.url"
-```
+- [Development](https://hubs.aelatgt.net/qQiDsRg/proper-impressive-sphere/)
+- [Production](https://hubs.aelatgt.net/kqBePhx/production-expressive-avatars/)

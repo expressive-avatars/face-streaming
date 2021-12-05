@@ -10,3 +10,8 @@ tunnels:
     bind-tls: true
     addr: 5000
     subdomain: YOUR-BACKEND-SUBDOMAIN
+  lib:
+    proto: http
+    bind-tls: true
+    addr: 4000
+    subdomain: YOUR-LIB-SUBDOMAIN

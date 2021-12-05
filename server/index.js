@@ -17,11 +17,50 @@ app.get('/', (req, res) => {
   res.send('Server is up :)')
 })
 
-io.on('connection', (socket) => {
-  console.log('a user connected')
-  socket.on('face', (data) => {
-    socket.broadcast.volatile.emit('face', data)
-  })
+const records = {}
+
+io.of('provider').on('connection', (socket) => {
+  /** @type {{ email: string }} */
+  const query = socket.handshake.query
+
+  if (query.email) {
+    console.log(`Provider connected for email ${query.email}`)
+    socket.on('face', (data) => {
+      io.of('consumer').in(query.email).volatile.emit('face', data)
+    })
+  } else {
+    console.error('Invalid provider query:\n', JSON.stringify(query, null, 2))
+  }
+})
+
+io.of('consumer', (socket) => {
+  /** @type {{ type: 'primary'|'peer', email: ?string, networkId: string }} */
+  const query = socket.handshake.query
+
+  if (query.type === 'primary') {
+    console.log(`Primary consumer for ${query.email} registered to ${query.networkId}`)
+
+    socket.join(query.email)
+
+    // Make existing peers join the room
+    io.of('consumer').in(query.networkId).socketsJoin(query.email)
+
+    // Associate networkId with email for future peers
+    records[query.networkId] = query.email
+
+    socket.on('rooms', (callback) => {
+      console.log('requesting rooms')
+      callback(Array.from(socket.rooms))
+    })
+
+    socket.on('disconnect', () => {
+      delete records[query.networkId]
+    })
+  } else if (query.type === 'peer') {
+    socket.join(query.networkId)
+    const email = records[query.networkId]
+    if (email) socket.join(email)
+  }
 })
 
 httpServer.listen(port, () => {

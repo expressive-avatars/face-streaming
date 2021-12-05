@@ -5,7 +5,10 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './',
+  publicDir: process.env.LIBRARY_MODE ? false : 'public',
   build: {
+    outDir: process.env.LIBRARY_MODE ? 'dist/lib' : 'dist/app',
     lib: process.env.LIBRARY_MODE && {
       entry: path.resolve(__dirname, 'lib/room.js'),
       formats: ['es'],

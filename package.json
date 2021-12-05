@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:backend\" \"yarn dev:hubs\"",
+    "tunnel": "ngrok start --all --config ngrok.yaml",
     "dev:frontend": "vite",
     "dev:backend": "nodemon server/index.js",
-    "tunnel": "ngrok start --all --config ngrok.yaml",
-    "build": "vite build",
-    "dev:hubs": "LIBRARY_MODE=true vite build --watch"
+    "dev:hubs": "LIBRARY_MODE=true vite build --watch",
+    "build": "concurrently \"yarn build:app\" \"yarn build:hubs\"",
+    "build:app": "vite build",
+    "build:hubs": "LIBRARY_MODE=true vite build"
   },
   "dependencies": {
     "@react-three/drei": "^7.17.1",

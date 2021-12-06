@@ -30,6 +30,7 @@ export function Sender() {
               domOverlay: { root: rootEl },
             }}
             camera={{ fov: 35 }}
+            style={{ background: 'black' }}
           >
             <FacetrackingSender email={email} />
             <FacetrackingCalibrator />

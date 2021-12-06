@@ -17,7 +17,8 @@ export function FacetrackingPreview() {
     <group position-z={-4}>
       <mesh ref={mesh}>
         <boxGeometry />
-        <meshNormalMaterial />
+        <meshNormalMaterial wireframe />
+        <axesHelper />
       </mesh>
     </group>
   )

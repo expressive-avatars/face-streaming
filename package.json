@@ -30,6 +30,7 @@
     "@vitejs/plugin-react": "^1.0.5",
     "concurrently": "^6.3.0",
     "live-server": "^1.2.1",
+    "ngrok": "^4.2.2",
     "nodemon": "^2.0.14",
     "vite": "^2.6.14"
   }

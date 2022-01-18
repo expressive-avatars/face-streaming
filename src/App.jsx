@@ -1,12 +1,23 @@
 import { Button } from '@/components/dom/Button'
 import { useCredentials } from '@/hooks/useCredentials'
+import { useState } from 'react'
+import { ThreeApp } from './components/three/ThreeApp'
 
 export default function App() {
+  const [started, setStarted] = useState(false)
+  const onStart = () => {
+    console.log('starting XR session')
+    setStarted(true)
+  }
+  return started ? <ThreeApp /> : <LandingPage onStart={onStart} />
+}
+
+function LandingPage({ onStart }) {
   const credentials = useCredentials()
   return (
     <div className="flex flex-col justify-center items-center w-full h-full">
       <img alt="Augmented Environments Lab logo" src="/ael-logo.jpg" width={200} />
-      {credentials ? <SignedIn /> : <SignedOut />}
+      {credentials ? <SignedIn onStart={onStart} /> : <SignedOut />}
     </div>
   )
 }
@@ -20,7 +31,7 @@ function SignedOut() {
   )
 }
 
-function SignedIn() {
+function SignedIn({ onStart }) {
   const { email } = useCredentials()
   const signInURL = createSigninURL()
   return (
@@ -33,7 +44,7 @@ function SignedIn() {
           Switch account
         </a>
       </div>
-      <Button>Start Tracking</Button>
+      <Button onClick={onStart}>Start Tracking</Button>
     </>
   )
 }

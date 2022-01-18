@@ -3,6 +3,7 @@ import { Box, Environment } from '@react-three/drei'
 import { Suspense, useRef, useState } from 'react'
 import { ARCanvas } from './ARCanvas'
 import { AttachToCamera } from './AttachToCamera'
+import { FacelessAvatar } from './FacelessAvatar'
 import { Spin } from './Spin'
 
 export function ThreeApp() {
@@ -20,12 +21,10 @@ export function ThreeApp() {
       <Suspense fallback={null}>
         <Environment preset="apartment" background />
         <AttachToCamera>
-          <group position-z={-3}>
-            <Spin>
-              <Box>
-                <meshNormalMaterial />
-              </Box>
-            </Spin>
+          <group position-z={-5} scale={10}>
+            <group position={[0, -0.6, 0]}>
+              <FacelessAvatar />
+            </group>
           </group>
         </AttachToCamera>
       </Suspense>

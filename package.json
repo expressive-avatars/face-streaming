@@ -7,10 +7,11 @@
     "dev:app": "vite",
     "dev:server": "NODE_ENV=development nodemon server/index.js",
     "dev:lib": "LIBRARY_MODE=true vite build --watch --mode=development",
-    "build": "concurrently \"yarn build:app\" \"yarn build:lib\"",
+    "build": "yarn build:app && yarn build:lib",
     "build:app": "vite build",
     "build:lib": "LIBRARY_MODE=true vite build",
-    "serve:lib": "live-server dist --port=4000 --no-browser --cors --quiet"
+    "serve:lib": "live-server _lib --port=4000 --no-browser --cors --quiet",
+    "preview": "live-server dist --no-browser --cors"
   },
   "dependencies": {
     "@react-three/drei": "^7.17.1",

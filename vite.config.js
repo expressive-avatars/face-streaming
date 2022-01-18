@@ -1,29 +1,63 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import fs from 'fs'
+
+/** @type {import('vite').UserConfigExport} */
+const commonConfig = ({ mode }) => {
+  /** @type {import('vite').UserConfig} */
+  const config = {
+    plugins: [react()],
+    base: './',
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+    server: {
+      strictPort: true,
+      hmr: {
+        clientPort: 443,
+      },
+    },
+  }
+  if (mode === 'development') {
+    try {
+      const credentials = JSON.parse(fs.readFileSync('.ret.credentials'))
+      config.define = {
+        'import.meta.env.EMAIL': `"${credentials.email}"`,
+        'import.meta.env.TOKEN': `"${credentials.token}"`,
+      }
+    } catch (e) {
+      console.error('No .ret.credentials found')
+    }
+  }
+  return config
+}
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  base: './',
-  publicDir: process.env.LIBRARY_MODE ? false : 'public',
-  build: {
-    outDir: process.env.LIBRARY_MODE ? 'dist/lib' : 'dist/app',
-    lib: process.env.LIBRARY_MODE && {
-      entry: path.resolve(__dirname, 'lib/index.js'),
-      formats: ['es'],
-      fileName: () => `index.js`,
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  server: {
-    strictPort: true,
-    hmr: {
-      clientPort: 443,
-    },
-  },
+export default defineConfig((configEnv) => {
+  const { mode } = configEnv
+  if (process.env.LIBRARY_MODE) {
+    return {
+      ...commonConfig(configEnv),
+      publicDir: false,
+      build: {
+        outDir: mode === 'development' ? '_lib/lib' : 'dist/lib',
+        lib: {
+          entry: path.resolve(__dirname, 'lib/index.js'),
+          formats: ['es'],
+          fileName: () => `index.js`,
+        },
+      },
+    }
+  } else {
+    return {
+      ...commonConfig(configEnv),
+      publicDir: 'public',
+      build: {
+        outDir: mode === 'development' ? '_site' : 'dist',
+      },
+    }
+  }
 })

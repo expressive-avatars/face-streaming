@@ -5,3 +5,6 @@ dist
 dist-ssr
 *.local
 ngrok.yaml
+.ret.credentials
+_site
+_lib

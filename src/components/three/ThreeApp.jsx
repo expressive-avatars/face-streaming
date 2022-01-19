@@ -57,7 +57,7 @@ export function ThreeApp() {
       {createPortal(
         <Overlay>
           <div className="fixed bottom-0 flex justify-center w-full">
-            <div className="bg-white rounded-t-lg shadow-lg p-8 flex flex-col items-center gap-4">
+            <div className="bg-white rounded-t-lg shadow-lg w-[450px] mx-8 p-8 flex flex-col items-center gap-4">
               <div className="flex flex-col items-center">
                 <span className="flex items-center gap-2">
                   <StatusDot color={hubName ? 'green' : 'orange'} size={10} />

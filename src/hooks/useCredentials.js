@@ -1,5 +1,8 @@
 import { useState } from 'react'
 
+/**
+ * @returns {{ email: string, token: string }}
+ */
 export function useCredentials() {
   const [credentials] = useState(() => {
     if (import.meta.env.MODE === 'development') {

@@ -18,11 +18,13 @@
     "@react-three/fiber": "^7.0.17",
     "@react-three/xr": "^3.2.0",
     "express": "^4.17.1",
+    "jwt-decode": "^3.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0",
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.3.2",
+    "suspend-react": "^0.0.8",
     "three": "^0.133.1",
     "twind": "^0.16.16",
     "valtio": "^1.2.5"

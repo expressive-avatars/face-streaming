@@ -1,6 +1,7 @@
 const express = require('express')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
+const jwtDecode = require('jwt-decode')
 
 const port = process.env.PORT || 5000
 
@@ -17,40 +18,63 @@ app.get('/', (req, res) => {
   res.send('Server is up :)')
 })
 
+// Maps networkId to accountId
 const records = {}
 
 io.of('provider').on('connection', (socket) => {
-  /** @type {{ email: string }} */
+  /** @type {{ token: string }} */
   const query = socket.handshake.query
 
-  if (query.email) {
-    console.log(`Provider connected for email ${query.email}`)
-    socket.on('face', (data) => {
-      io.of('consumer').in(query.email).volatile.emit('face', data)
-    })
+  if (query.token) {
+    const accountId = jwtDecode(query.token).sub
+    if (accountId) {
+      console.log(`Provider connected for account ID ${accountId}`)
+
+      /**
+       * Join room with accountId so primary consumer can send Hubs status updates
+       * e.g. connection status, room name, avatar URL
+       */
+      socket.join(accountId)
+
+      socket.on('face', (data) => {
+        io.of('consumer').in(accountId).volatile.emit('face', data)
+      })
+    }
   } else {
     console.error('Invalid provider query:\n', JSON.stringify(query, null, 2))
   }
 })
 
 io.of('consumer', (socket) => {
-  /** @type {{ type: 'primary'|'peer', email: ?string, networkId: string }} */
+  /** @type {{ type: 'primary'|'peer', token: ?string, networkId: string }} */
   const query = socket.handshake.query
 
-  if (query.type === 'primary') {
-    console.log(`Primary consumer for ${query.email} registered to ${query.networkId}`)
+  console.log('consumer?')
 
-    socket.join(query.email)
+  if (query.type === 'primary' && query.token && query.networkId) {
+    const accountId = jwtDecode(query.token).sub
+
+    console.log(`Primary consumer for accountId ${accountId} registered to ${query.networkId}`)
+
+    socket.join(accountId)
 
     // Make existing peers join the room
-    io.of('consumer').in(query.networkId).socketsJoin(query.email)
+    io.of('consumer').in(query.networkId).socketsJoin(accountId)
 
-    // Associate networkId with email for future peers
-    records[query.networkId] = query.email
+    // Associate networkId with accountId for future peers
+    records[query.networkId] = accountId
 
     socket.on('rooms', (callback) => {
       console.log('requesting rooms')
       callback(Array.from(socket.rooms))
+    })
+
+    socket.on('hub_name', (name) => {
+      io.of('provider').in(accountId).emit('hub_name', name)
+    })
+
+    socket.on('avatar_url', (url) => {
+      io.of('provider').in(accountId).emit('avatar_url', url)
     })
 
     socket.on('disconnect', () => {
@@ -58,8 +82,8 @@ io.of('consumer', (socket) => {
     })
   } else if (query.type === 'peer') {
     socket.join(query.networkId)
-    const email = records[query.networkId]
-    if (email) socket.join(email)
+    const accountId = records[query.networkId]
+    if (accountId) socket.join(accountId)
   }
 })
 

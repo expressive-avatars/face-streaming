@@ -73,6 +73,10 @@ io.of('consumer', (socket) => {
       io.of('provider').in(accountId).emit('hub_name', name)
     })
 
+    socket.on('avatar_url', (url) => {
+      io.of('provider').in(accountId).emit('avatar_url', url)
+    })
+
     socket.on('disconnect', () => {
       delete records[query.networkId]
     })

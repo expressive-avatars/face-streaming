@@ -3,11 +3,14 @@ import { ARManager } from '@/objects/ARManager'
 import { Box, Environment } from '@react-three/drei'
 import { Suspense, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Button } from '../dom/Button'
-import { ARCanvas } from './ARCanvas'
-import { AttachToCamera } from './AttachToCamera'
-import { FacelessAvatar } from './FacelessAvatar'
-import { Spin } from './Spin'
+
+import { Button } from '@/components/dom/Button'
+
+import { ARCanvas } from '@/components/three/ARCanvas'
+import { AttachToCamera } from '@/components/three/AttachToCamera'
+import { FacelessAvatar } from '@/components/three/FacelessAvatar'
+import { FacetrackingSender } from '@/components/three/FacetrackingSender'
+import { Spin } from '@/components/three/Spin'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -25,6 +28,7 @@ export function ThreeApp() {
         <FacetrackingProvider>
           <Suspense fallback={null}>
             <Environment preset="apartment" background />
+            <FacetrackingSender />
             <AttachToCamera>
               <group position-z={-5} scale={10}>
                 <group position={[0, -0.6, 0]}>

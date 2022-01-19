@@ -1,6 +1,7 @@
 const express = require('express')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
+const jwtDecode = require('jwt-decode')
 
 const port = process.env.PORT || 5000
 
@@ -20,14 +21,24 @@ app.get('/', (req, res) => {
 const records = {}
 
 io.of('provider').on('connection', (socket) => {
-  /** @type {{ email: string }} */
+  /** @type {{ token: string }} */
   const query = socket.handshake.query
 
-  if (query.email) {
-    console.log(`Provider connected for email ${query.email}`)
-    socket.on('face', (data) => {
-      io.of('consumer').in(query.email).volatile.emit('face', data)
-    })
+  if (query.token) {
+    const { sub: accountId } = jwtDecode(query.token)
+    if (accountId) {
+      console.log(`Provider connected for account ID ${accountId}`)
+
+      /**
+       * Join room with accountId so primary consumer can send Hubs status updates
+       * e.g. connection status, room name, avatar URL
+       */
+      socket.join(accountId)
+
+      socket.on('face', (data) => {
+        io.of('consumer').in(accountId).volatile.emit('face', data)
+      })
+    }
   } else {
     console.error('Invalid provider query:\n', JSON.stringify(query, null, 2))
   }

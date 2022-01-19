@@ -69,6 +69,10 @@ io.of('consumer', (socket) => {
       callback(Array.from(socket.rooms))
     })
 
+    socket.on('hub_name', (name) => {
+      io.of('provider').in(accountId).emit('hub_name', name)
+    })
+
     socket.on('disconnect', () => {
       delete records[query.networkId]
     })

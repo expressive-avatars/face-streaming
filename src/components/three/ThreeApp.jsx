@@ -1,7 +1,7 @@
 import { FacetrackingProvider } from '@/context/FacetrackingContext'
 import { ARManager } from '@/objects/ARManager'
 import { Box, Environment } from '@react-three/drei'
-import { Suspense, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Button } from '@/components/dom/Button'
@@ -11,6 +11,8 @@ import { AttachToCamera } from '@/components/three/AttachToCamera'
 import { FacelessAvatar } from '@/components/three/FacelessAvatar'
 import { FacetrackingSender } from '@/components/three/FacetrackingSender'
 import { Spin } from '@/components/three/Spin'
+import { useCredentials } from '@/hooks/useCredentials'
+import { useSocket } from '@/hooks/useSocket'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -22,13 +24,26 @@ export function ThreeApp() {
     ar.start()
   }
 
+  const { token } = useCredentials()
+  const socket = useSocket(import.meta.env.VITE_BACKEND + '/provider', {
+    query: { token },
+  })
+
+  // Listen for hub name
+  const [hubName, setHubName] = useState()
+  useEffect(() => {
+    const listener = (name) => setHubName(name)
+    socket.on('hub_name', listener)
+    return () => socket.removeListener('hub_name', listener)
+  }, [socket])
+
   return (
     <>
       <ARCanvas onCreated={onCreated}>
         <FacetrackingProvider>
           <Suspense fallback={null}>
             <Environment preset="apartment" background />
-            <FacetrackingSender />
+            <FacetrackingSender socket={socket} />
             <AttachToCamera>
               <group position-z={-5} scale={10}>
                 <group position={[0, -0.6, 0]}>
@@ -45,10 +60,10 @@ export function ThreeApp() {
             <div className="bg-white rounded-t-lg shadow-lg p-8 flex flex-col items-center gap-4">
               <div className="flex flex-col items-center">
                 <span className="flex items-center gap-2">
-                  <StatusDot color="orange" size={10} />
-                  Waiting for connection...
+                  <StatusDot color={hubName ? 'green' : 'orange'} size={10} />
+                  {hubName ? 'Connected' : 'Waiting for connection...'}
                 </span>
-                <p className="text-hubs-gray">Join a compatible room on Hubs desktop</p>
+                <p className="text-hubs-gray">{hubName ?? 'Join a compatible room on Hubs desktop'}</p>
               </div>
               <span className="flex gap-4">
                 <Button>Recenter</Button>

@@ -3,15 +3,16 @@ import { useThree } from '@react-three/fiber'
 import { useXRFrame } from '@react-three/xr'
 import { useXRSession } from '@/hooks/useXRSession'
 import * as THREE from 'three'
+import { useReferenceSpace } from './useReferenceSpace'
 
 /**
- * @typedef {{[blendShape: string]: number}} BlendShapes
- * @param {(blendShapes: BlendShapes, transform: THREE.Matrix4) => void} fn
+ * Note: this corrects for the mirrored morph targets provided by WebXR Viewer
+ *
+ * @typedef {Record<BlendShapeName, number>} BlendShapes
+ * @param {(blendShapes: BlendShapes, transform: number[]) => void} fn
  */
 export function useFacetracking(fn) {
-  const { gl } = useThree()
-  const session = useXRSession(gl)
-  useEffect(() => {
+  useXRSession((session) => {
     if (session) {
       session.updateWorldSensingState({
         meshDetectionState: {
@@ -19,12 +20,15 @@ export function useFacetracking(fn) {
         },
       })
     }
-  }, [session])
+  })
+  const localReferenceSpace = useReferenceSpace('local')
+  const viewerReferenceSpace = useReferenceSpace('viewer')
+
   useXRFrame((time, frame) => {
     const worldInfo = frame.worldInformation
     if (worldInfo.meshes) {
       worldInfo.meshes.forEach((worldMesh) => {
-        if (worldMesh.changed) {
+        if (worldMesh.changed && worldMesh.blendShapes && worldMesh.modelMatrix) {
           fn(remapBlendShapes(worldMesh.blendShapes), worldMesh.modelMatrix)
         }
       })
@@ -87,8 +91,12 @@ const mirrorMap = {
 }
 
 /**
- * @param {{[name: string]: number}} blendShapes
+ * @typedef {keyof mirrorMap} BlendShapeName
+ */
+
+/**
+ * @param {BlendShapes} blendShapes
  */
 function remapBlendShapes(blendShapes) {
-  return Object.fromEntries(Object.keys(blendShapes).map((name) => [name, blendShapes[mirrorMap[name]]]))
+  return Object.fromEntries(Object.keys(blendShapes).map((name) => [name, blendShapes[mirrorMap[name]] ?? 0]))
 }

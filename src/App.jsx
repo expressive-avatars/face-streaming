@@ -44,7 +44,9 @@ function SignedIn({ onStart }) {
           Switch account
         </a>
       </div>
-      <Button onClick={onStart}>Start Tracking</Button>
+      <Button primary onClick={onStart}>
+        Start Tracking
+      </Button>
     </>
   )
 }

@@ -1,3 +1,4 @@
+import { FacetrackingProvider } from '@/context/FacetrackingContext'
 import { ARManager } from '@/objects/ARManager'
 import { Box, Environment } from '@react-three/drei'
 import { Suspense, useRef, useState } from 'react'
@@ -21,16 +22,18 @@ export function ThreeApp() {
   return (
     <>
       <ARCanvas onCreated={onCreated}>
-        <Suspense fallback={null}>
-          <Environment preset="apartment" background />
-          <AttachToCamera>
-            <group position-z={-5} scale={10}>
-              <group position={[0, -0.6, 0]}>
-                <FacelessAvatar />
+        <FacetrackingProvider>
+          <Suspense fallback={null}>
+            <Environment preset="apartment" background />
+            <AttachToCamera>
+              <group position-z={-5} scale={10}>
+                <group position={[0, -0.6, 0]}>
+                  <FacelessAvatar />
+                </group>
               </group>
-            </group>
-          </AttachToCamera>
-        </Suspense>
+            </AttachToCamera>
+          </Suspense>
+        </FacetrackingProvider>
       </ARCanvas>
       {createPortal(
         <Overlay>

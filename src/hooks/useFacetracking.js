@@ -1,17 +1,21 @@
-import { useEffect } from 'react'
-import { useThree } from '@react-three/fiber'
 import { useXRFrame } from '@react-three/xr'
-import { useXRSession } from '@/hooks/useXRSession'
 import * as THREE from 'three'
+
+import { useXRSession } from '@/hooks/useXRSession'
 import { useReferenceSpace } from './useReferenceSpace'
+import { useState } from 'react'
+
+const localHeadMatrix = new THREE.Matrix4()
+const viewerOrientation = new THREE.Quaternion()
 
 /**
  * Note: this corrects for the mirrored morph targets provided by WebXR Viewer
  *
  * @typedef {Record<BlendShapeName, number>} BlendShapes
- * @param {(blendShapes: BlendShapes, transform: number[]) => void} fn
+ * @param {(blendShapes: BlendShapes, headOrientation: THREE.Quaternion) => void} fn
  */
 export function useFacetracking(fn) {
+  const [[headOrientation, eyeOrientation]] = useState(() => [new THREE.Quaternion(), new THREE.Quaternion()])
   useXRSession((session) => {
     if (session) {
       session.updateWorldSensingState({
@@ -26,10 +30,22 @@ export function useFacetracking(fn) {
 
   useXRFrame((time, frame) => {
     const worldInfo = frame.worldInformation
-    if (worldInfo.meshes) {
+    if (worldInfo.meshes && localReferenceSpace && viewerReferenceSpace) {
       worldInfo.meshes.forEach((worldMesh) => {
         if (worldMesh.changed && worldMesh.blendShapes && worldMesh.modelMatrix) {
-          fn(remapBlendShapes(worldMesh.blendShapes), worldMesh.modelMatrix)
+          const blendShapes = remapBlendShapes(worldMesh.blendShapes)
+
+          // Orient head using tracker result in local (physical) space
+          localHeadMatrix.fromArray(worldMesh.modelMatrix)
+          headOrientation.setFromRotationMatrix(localHeadMatrix)
+
+          // Re-orient result to viewer's space
+          const localToViewPose = frame.getPose(viewerReferenceSpace, localReferenceSpace)
+          const q = localToViewPose.transform.orientation
+          viewerOrientation.set(q.x, q.y, q.z, q.w)
+          headOrientation.premultiply(viewerOrientation)
+
+          fn(blendShapes, headOrientation)
         }
       })
     }

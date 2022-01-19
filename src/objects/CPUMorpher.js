@@ -15,9 +15,12 @@ export class CPUMorpher {
     if (!mesh.isMesh) throw new Error('CPUMorpher requires a THREE.Mesh instance')
     this.mesh = mesh
 
-    // Clone the original vertex positions so we don't overwrite them
-    const _position = mesh.geometry.getAttribute('position').clone()
-    mesh.geometry.setAttribute('_position', _position)
+    // If we haven't already done so...
+    if (!mesh.geometry.getAttribute('_position')) {
+      // Clone the original vertex positions so we don't overwrite them
+      const _position = mesh.geometry.getAttribute('position').clone()
+      mesh.geometry.setAttribute('_position', _position)
+    }
 
     this.morphTargetInfluences = Array.from(mesh.morphTargetInfluences)
   }

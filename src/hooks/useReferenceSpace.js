@@ -1,17 +1,13 @@
-import { suspend } from 'suspend-react'
+import { useEffect, useState } from 'react'
 import { useXRSession } from './useXRSession'
 
 export function useReferenceSpace(referenceSpaceType) {
   const session = useXRSession()
-  const referenceSpace = suspend(
-    async (session) => {
-      if (session) {
-        return await session.requestReferenceSpace(referenceSpaceType)
-      } else {
-        return null
-      }
-    },
-    [session]
-  )
+  const [referenceSpace, setReferenceSpace] = useState()
+  useEffect(() => {
+    if (session) {
+      session.requestReferenceSpace(referenceSpaceType).then((value) => setReferenceSpace(value))
+    }
+  }, [session])
   return referenceSpace
 }

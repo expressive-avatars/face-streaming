@@ -48,15 +48,9 @@ export function FacelessAvatar() {
       }
     })
   }, [scene])
-  useFacetracking((blendShapes, transform) => {
+  useFacetracking((blendShapes, headOrientation) => {
     // Update bones
-    mat4.fromArray(transform)
-    bones.head.setRotationFromMatrix(mat4)
-
-    if (!didLog) {
-      console.log(blendShapes, transform)
-      didLog = true
-    }
+    bones.head.setRotationFromQuaternion(headOrientation)
 
     // Update morphs
     for (let morpher of morphers) {

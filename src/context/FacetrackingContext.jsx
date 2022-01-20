@@ -23,7 +23,8 @@ export const FacetrackingContext = React.createContext()
 export function FacetrackingProvider({ children }) {
   /** @type {React.RefObject<Set<FacetrackingCallback>>} */
   const subscribers = useRef(new Set())
-  const [[headOrientation, eyeOrientation]] = useState(() => [new THREE.Quaternion(), new THREE.Quaternion()])
+  const needsCalibrate = useRef(false)
+  const [[headOrientation, calibrationOrientation]] = useState(() => [new THREE.Quaternion(), new THREE.Quaternion()])
   useXRSession((session) => {
     if (session) {
       session.updateWorldSensingState({
@@ -59,6 +60,13 @@ export function FacetrackingProvider({ children }) {
           euler.z = -euler.z
           headOrientation.setFromEuler(euler)
 
+          // Calibration
+          if (needsCalibrate.current) {
+            calibrationOrientation.copy(headOrientation).invert()
+            needsCalibrate.current = false
+          }
+          headOrientation.premultiply(calibrationOrientation)
+
           subscribers.current.forEach((callbackFn) => {
             callbackFn(blendShapes, headOrientation)
           })
@@ -72,6 +80,9 @@ export function FacetrackingProvider({ children }) {
       subscribers.current.add(fn)
       const unregister = () => subscribers.current.delete(fn)
       return unregister
+    },
+    calibrate: () => {
+      needsCalibrate.current = true
     },
   }
 

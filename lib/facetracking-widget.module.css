@@ -1,5 +1,6 @@
 :root {
   --hubs-blue: #007ab8;
+  --hubs-lightblue: #008bd1;
   --hubs-gray: #868686;
 }
 
@@ -9,7 +10,7 @@
   bottom: 0;
   right: 0;
   pointer-events: initial;
-  padding: 15px;
+  padding: 0 15px;
   margin-right: 15px;
   background-color: white;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
@@ -23,14 +24,19 @@
 }
 
 .btn {
+  --btn-color: var(--hubs-blue);
   background: none;
   padding: 8px 12px;
   border-radius: 10px;
-  border: 2px solid var(--hubs-blue);
-  color: var(--hubs-blue);
+  border: 2px solid var(--btn-color);
+  color: var(--btn-color);
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.btn:hover {
+  --btn-color: var(--hubs-lightblue);
 }
 
 .btnCollapse {
@@ -40,9 +46,8 @@
   flex-grow: 1;
 }
 
-.previewArea {
+.collapsible {
   overflow: hidden;
   transition: height 200ms ease-in-out;
   height: 0;
-  border-radius: 5px;
 }

@@ -71,26 +71,33 @@ io.of('consumer', (socket) => {
     // Associate networkId with accountId for future peers
     records[query.networkId] = accountId
 
-    socket.on('rooms', (callback) => {
-      console.log('requesting rooms')
-      callback(Array.from(socket.rooms))
-    })
+    const pairedDevice = io.of('provider').in(accountId)
 
+    // Forward latest hub name from desktop to iOS
     socket.on('hub_name', (name) => {
-      io.of('provider').in(accountId).emit('hub_name', name)
+      pairedDevice.emit('hub_name', name)
     })
 
+    // Forward latest avatar URL from desktop to iOS
     socket.on('avatar_url', (url) => {
-      io.of('provider').in(accountId).emit('avatar_url', url)
+      pairedDevice.emit('avatar_url', url)
+    })
+
+    // Desktop wants iOS to calibrate
+    socket.on('calibrate', () => {
+      pairedDevice.emit('calibrate')
     })
 
     socket.on('disconnect', () => {
       delete records[query.networkId]
-      io.of('provider').in(accountId).emit('hub_name', undefined)
-      io.of('provider').in(accountId).emit('avatar_url', undefined)
+      pairedDevice.emit('hub_name', undefined)
+      pairedDevice.emit('avatar_url', undefined)
     })
   } else if (query.type === 'peer') {
+    // Join room with networkId initially, in case we join before primary consumer
     socket.join(query.networkId)
+
+    // If primary consumer already joined, then use the existing accountId record
     const accountId = records[query.networkId]
     if (accountId) socket.join(accountId)
   }

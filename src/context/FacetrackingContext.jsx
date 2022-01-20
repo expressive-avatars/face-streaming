@@ -7,6 +7,7 @@ import { useReferenceSpace } from '@/hooks/useReferenceSpace'
 
 const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
+const euler = new THREE.Euler()
 
 export const FacetrackingContext = React.createContext()
 
@@ -51,6 +52,13 @@ export function FacetrackingProvider({ children }) {
           const q = localToViewPose.transform.orientation
           viewerOrientation.set(q.x, q.y, q.z, q.w)
           headOrientation.premultiply(viewerOrientation)
+
+          // Un-mirror head orientation
+          euler.setFromQuaternion(headOrientation)
+          euler.y = -euler.y
+          euler.z = -euler.z
+          headOrientation.setFromEuler(euler)
+
           subscribers.current.forEach((callbackFn) => {
             callbackFn(blendShapes, headOrientation)
           })
@@ -129,5 +137,5 @@ const mirrorMap = {
  * @returns {BlendShapes}
  */
 function remapBlendShapes(blendShapes) {
-  return Object.fromEntries(Object.keys(blendShapes).map((name) => [name, blendShapes[mirrorMap[name]] ?? 0]))
+  return Object.fromEntries(Object.keys(mirrorMap).map((name) => [name, blendShapes[mirrorMap[name]] ?? 0]))
 }

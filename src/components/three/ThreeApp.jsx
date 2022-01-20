@@ -81,7 +81,9 @@ function ThreeScene({ socket }) {
       <FacetrackingSender socket={socket} />
       <AttachToCamera>
         <group position-z={-5} scale={10}>
-          <group position={[0, -0.6, 0]}>{avatarURL ? <ReadyPlayerMeAvatar path={avatarURL} /> : <FacelessAvatar />}</group>
+          <group position={[0, -0.6, 0]} scale-x={-1}>
+            {avatarURL ? <ReadyPlayerMeAvatar path={avatarURL} /> : <FacelessAvatar />}
+          </group>
         </group>
       </AttachToCamera>
     </FacetrackingProvider>

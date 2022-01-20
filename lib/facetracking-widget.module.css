@@ -1,3 +1,8 @@
+:root {
+  --hubs-blue: #007ab8;
+  --hubs-gray: #868686;
+}
+
 .widget {
   --border-radius: 20px;
   position: absolute;
@@ -5,7 +10,34 @@
   right: 0;
   pointer-events: initial;
   padding: 15px;
+  margin-right: 15px;
   background-color: white;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   box-shadow: 0 0 5px rgb(0, 0, 0, 10%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn {
+  background: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--hubs-blue);
+  color: var(--hubs-blue);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.previewArea {
+  overflow: hidden;
+  transition: height ease-in-out 200ms;
+  height: 0;
 }

@@ -10,5 +10,5 @@ export function useFacetracking(fn) {
   useEffect(() => {
     const unregister = register(fn)
     return unregister
-  }, [])
+  }, [fn])
 }

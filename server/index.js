@@ -36,6 +36,11 @@ io.of('provider').on('connection', (socket) => {
        */
       socket.join(accountId)
 
+      /**
+       * Request user status from Hubs
+       */
+      io.of('consumer').in('primary').in(accountId).emit('provider_join')
+
       socket.on('face', (data) => {
         io.of('consumer').in(accountId).volatile.emit('face', data)
       })
@@ -48,6 +53,8 @@ io.of('provider').on('connection', (socket) => {
 io.of('consumer', (socket) => {
   /** @type {{ type: 'primary'|'peer', token: ?string, networkId: string }} */
   const query = socket.handshake.query
+
+  socket.join(query.type)
 
   console.log('consumer?')
 
@@ -79,6 +86,8 @@ io.of('consumer', (socket) => {
 
     socket.on('disconnect', () => {
       delete records[query.networkId]
+      io.of('provider').in(accountId).emit('hub_name', undefined)
+      io.of('provider').in(accountId).emit('avatar_url', undefined)
     })
   } else if (query.type === 'peer') {
     socket.join(query.networkId)

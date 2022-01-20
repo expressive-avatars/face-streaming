@@ -5,4 +5,4 @@
 
 # Artifacts
 
-- [`/lib/index.js`](https://expressive-avatars.github.io/face-streaming/lib/index.js)
+- [`/lib/index.js`](https://ios.aelatgt.net/lib/index.js)

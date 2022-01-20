@@ -1,0 +1,11 @@
+.widget {
+  --border-radius: 20px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: initial;
+  padding: 15px;
+  background-color: white;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  box-shadow: 0 0 5px rgb(0, 0, 0, 10%);
+}

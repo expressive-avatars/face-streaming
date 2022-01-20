@@ -41,7 +41,10 @@ export class ARManager {
   }
 
   start() {
-    navigator.xr.requestSession('immersive-ar', this.sessionInit).then(this.onSessionStarted.bind(this))
+    navigator.xr
+      .requestSession('immersive-ar', this.sessionInit)
+      .then(this.onSessionStarted.bind(this))
+      .catch((e) => console.log('Failed to start AR session'))
   }
 
   end() {

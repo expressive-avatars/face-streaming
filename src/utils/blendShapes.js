@@ -8,7 +8,19 @@
  * @returns {BlendShapes}
  */
 export function remapBlendShapes(blendShapes) {
-  return Object.fromEntries(Object.keys(mirrorMap).map((name) => [name, blendShapes[mirrorMap[name]] ?? 0]))
+  return Object.fromEntries(
+    Object.keys(mirrorMap).map((name) => {
+      const mirroredName = mirrorMap[name]
+      let influence = blendShapes[mirroredName] ?? 0
+      influence *= scaling[mirroredName] ?? 1
+      return [name, influence]
+    })
+  )
+}
+
+const scaling = {
+  mouthSmileLeft: 0.6,
+  mouthSmileRight: 0.6,
 }
 
 const mirrorMap = {

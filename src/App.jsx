@@ -1,7 +1,7 @@
+import { useState } from 'react'
 import { Button } from '@/components/dom/Button'
 import { useCredentials } from '@/hooks/useCredentials'
-import { useState } from 'react'
-import { ThreeApp } from './components/three/ThreeApp'
+import { ThreeApp } from '@/components/three/ThreeApp'
 
 export default function App() {
   const [started, setStarted] = useState(false)

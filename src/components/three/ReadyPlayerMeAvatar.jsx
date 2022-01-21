@@ -1,5 +1,5 @@
 import { useFacetracking } from '@/hooks/useFacetracking'
-import { CPUMorpher } from '@/objects/CPUMorpher'
+import { CPUMorpher } from '@/utils/CPUMorpher'
 import { useGLTF } from '@react-three/drei'
 import { useMemo } from 'react'
 

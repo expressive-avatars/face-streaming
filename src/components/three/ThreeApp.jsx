@@ -1,7 +1,6 @@
-import { FacetrackingProvider } from '@/context/FacetrackingContext'
-import { ARManager } from '@/objects/ARManager'
-import { Box, Environment, TorusKnot } from '@react-three/drei'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { ARManager } from '@/utils/ARManager'
+import { Environment } from '@react-three/drei'
+import { Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Button } from '@/components/dom/Button'
@@ -11,9 +10,11 @@ import { AttachToCamera } from '@/components/three/AttachToCamera'
 import { FacelessAvatar } from '@/components/three/FacelessAvatar'
 import { FacetrackingSender } from '@/components/three/FacetrackingSender'
 import { Spin } from '@/components/three/Spin'
+import { ReadyPlayerMeAvatar } from '@/components/three/ReadyPlayerMeAvatar'
+import { FacetrackingManager } from '@/components/three/FacetrackingManager'
+
 import { useCredentials } from '@/hooks/useCredentials'
 import { useSocket } from '@/hooks/useSocket'
-import { ReadyPlayerMeAvatar } from './ReadyPlayerMeAvatar'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -41,9 +42,7 @@ export function ThreeApp() {
   return (
     <>
       <ARCanvas onCreated={onCreated}>
-        <Suspense fallback={null}>
-          <ThreeScene socket={socket} />
-        </Suspense>
+        <ThreeScene socket={socket} />
       </ARCanvas>
       {createPortal(
         <div className="fixed bottom-0 flex justify-center w-full">
@@ -76,8 +75,9 @@ function ThreeScene({ socket }) {
     return () => socket.removeListener('avatar_url', listener)
   }, [socket])
   return (
-    <FacetrackingProvider>
+    <Suspense fallback={null}>
       <Environment preset="apartment" background />
+      <FacetrackingManager />
       <FacetrackingSender socket={socket} />
       <AttachToCamera>
         <group position-z={-5} scale={10}>
@@ -86,7 +86,7 @@ function ThreeScene({ socket }) {
           </group>
         </group>
       </AttachToCamera>
-    </FacetrackingProvider>
+    </Suspense>
   )
 }
 

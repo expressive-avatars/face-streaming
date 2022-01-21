@@ -1,12 +1,8 @@
 import { useFacetracking } from '@/hooks/useFacetracking'
-import { CPUMorpher } from '@/objects/CPUMorpher'
+import { CPUMorpher } from '@/utils/CPUMorpher'
 import { useGLTF } from '@react-three/drei'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
-
-const mat4 = new THREE.Matrix4()
-
-let didLog = false
 
 export function FacelessAvatar() {
   const { scene, nodes } = useGLTF('/faceless-avatar.glb', null, true)

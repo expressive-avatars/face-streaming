@@ -59,6 +59,10 @@ export function FacetrackingManager() {
           store.subscribers.forEach((callbackFn) => {
             callbackFn(blendShapes, headOrientation)
           })
+
+          if (!store.trackingStarted) {
+            store.trackingStarted = true
+          }
         }
       })
     }

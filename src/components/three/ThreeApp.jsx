@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Button } from '@/components/dom/Button'
+import { SwitchCameraPrompt } from '@/components/dom/SwitchCameraPrompt'
+import { TrackingPanel } from '@/components/dom/TrackingPanel'
 
 import { ARCanvas } from '@/components/three/ARCanvas'
 import { AttachToCamera } from '@/components/three/AttachToCamera'
@@ -15,6 +17,8 @@ import { FacetrackingManager } from '@/components/three/FacetrackingManager'
 
 import { useCredentials } from '@/hooks/useCredentials'
 import { useSocket } from '@/hooks/useSocket'
+import { useStore } from '@/store'
+import { Curtain } from './Curtain'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -39,29 +43,14 @@ export function ThreeApp() {
     return () => socket.removeListener('hub_name', listener)
   }, [socket])
 
+  const snap = useStore()
+
   return (
     <>
       <ARCanvas onCreated={onCreated}>
         <ThreeScene socket={socket} />
       </ARCanvas>
-      {createPortal(
-        <div className="fixed bottom-0 flex justify-center w-full">
-          <div className="bg-white rounded-t-lg shadow-lg w-[450px] mx-8 p-8 flex flex-col items-center gap-4">
-            <div className="flex flex-col items-center">
-              <span className="flex items-center gap-2">
-                <StatusDot color={hubName ? 'green' : 'orange'} size={10} />
-                {hubName ? 'Connected' : 'Waiting for connection...'}
-              </span>
-              <p className="text-hubs-gray">{hubName ?? 'Join a compatible room on Hubs desktop'}</p>
-            </div>
-            <span className="flex gap-4">
-              <Button>Recenter</Button>
-              <Button>Pause</Button>
-            </span>
-          </div>
-        </div>,
-        ar.domOverlay.root
-      )}
+      {createPortal(snap.trackingStarted ? <TrackingPanel hubName={hubName} /> : <SwitchCameraPrompt />, ar.domOverlay.root)}
     </>
   )
 }
@@ -74,8 +63,11 @@ function ThreeScene({ socket }) {
     socket.on('avatar_url', listener)
     return () => socket.removeListener('avatar_url', listener)
   }, [socket])
+  const snap = useStore()
   return (
     <Suspense fallback={null}>
+      {!snap.trackingStarted && <Curtain color="white" />}
+
       <Environment preset="apartment" background />
       <FacetrackingManager />
       <FacetrackingSender socket={socket} />
@@ -88,19 +80,4 @@ function ThreeScene({ socket }) {
       </AttachToCamera>
     </Suspense>
   )
-}
-
-function StatusDot({ color = 'green', size = 10 }) {
-  const style = {
-    display: 'inline-block',
-    width: size,
-    height: size,
-    backgroundColor: color,
-    borderRadius: 9999,
-  }
-  return <div style={style} />
-}
-
-function Overlay({ children }) {
-  return <div className="absolute inset-0">{children}</div>
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/dom/Button'
+import { SwitchCameraPrompt } from '@/components/dom/SwitchCameraPrompt'
 import { useCredentials } from '@/hooks/useCredentials'
 import { ThreeApp } from '@/components/three/ThreeApp'
 
@@ -10,6 +11,7 @@ export default function App() {
     setStarted(true)
   }
   return started ? <ThreeApp /> : <LandingPage onStart={onStart} />
+  // return <SwitchCameraPrompt />
 }
 
 function LandingPage({ onStart }) {

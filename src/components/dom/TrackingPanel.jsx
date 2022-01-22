@@ -3,6 +3,10 @@ import { Button } from './Button'
 
 export function TrackingPanel({ hubName }) {
   const onClickRecenter = () => store.calibrate()
+  const onClickPause = () => {
+    store.paused = !store.paused
+    store.socket.emit('state', { paused: store.paused })
+  }
   const snap = useStore()
   return (
     <div className="fixed bottom-0 flex justify-center w-full">
@@ -18,7 +22,7 @@ export function TrackingPanel({ hubName }) {
           <Button onClick={onClickRecenter}>
             <span className="bx bx-target-lock text-[20px]" /> Recenter
           </Button>
-          <Button primary={snap.paused} className={`w-[50px]`} onClick={() => (store.paused = !store.paused)}>
+          <Button primary={snap.paused} className={`w-[50px]`} onClick={onClickPause}>
             {snap.paused ? <span className="bx bx-play scale-[2]" /> : <span className="bx bx-pause scale-[2]" />}
           </Button>
           <Button primary={snap.previewHidden} className={`w-[50px]`} onClick={() => (store.previewHidden = !store.previewHidden)}>

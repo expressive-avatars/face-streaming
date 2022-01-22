@@ -32,7 +32,14 @@
   color: var(--btn-color);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+}
+
+.primary {
+  background: var(--btn-color);
+  border: none;
+  color: white;
 }
 
 .btn:hover {

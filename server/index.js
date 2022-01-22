@@ -36,15 +36,22 @@ io.of('provider').on('connection', (socket) => {
        */
       socket.join(accountId)
 
+      const primaryConsumer = io.of('consumer').in('primary').in(accountId)
+      const allConsumers = io.of('consumer').in(accountId)
+
       /**
        * Request user status from Hubs
        */
       socket.on('provider_join', () => {
-        io.of('consumer').in('primary').in(accountId).emit('provider_join')
+        primaryConsumer.emit('provider_join')
+      })
+
+      socket.on('state', (...args) => {
+        primaryConsumer.emit('state', ...args)
       })
 
       socket.on('face', (data) => {
-        io.of('consumer').in(accountId).volatile.emit('face', data)
+        allConsumers.volatile.emit('face', data)
       })
     }
   } else {

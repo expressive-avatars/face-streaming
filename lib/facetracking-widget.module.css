@@ -1,0 +1,60 @@
+:root {
+  --hubs-blue: #007ab8;
+  --hubs-lightblue: #008bd1;
+  --hubs-gray: #868686;
+}
+
+.widget {
+  --border-radius: 20px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: initial;
+  padding: 0 15px;
+  margin-right: 15px;
+  background-color: white;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  box-shadow: 0 0 5px rgb(0, 0, 0, 10%);
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn {
+  --btn-color: var(--hubs-blue);
+  background: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--btn-color);
+  color: var(--btn-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.primary {
+  background: var(--btn-color);
+  border: none;
+  color: white;
+}
+
+.btn:hover {
+  --btn-color: var(--hubs-lightblue);
+}
+
+.btnCollapse {
+  background: none;
+  border: none;
+  color: var(--hubs-gray);
+  flex-grow: 1;
+}
+
+.collapsible {
+  overflow: hidden;
+  transition: height 200ms ease-in-out;
+  height: 0;
+}

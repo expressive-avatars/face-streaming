@@ -1,10 +1,23 @@
 import { useFacetracking } from '@/hooks/useFacetracking'
-import { CPUMorpher } from '@/objects/CPUMorpher'
+import { CPUMorpher } from '@/utils/CPUMorpher'
 import { useGLTF } from '@react-three/drei'
 import { useMemo } from 'react'
-
+import * as THREE from 'three'
 export function ReadyPlayerMeAvatar({ path }) {
-  const { scene, nodes } = useGLTF(path)
+  const _path = path ?? '/faceless-avatar.glb'
+
+  const { scene, nodes } = useGLTF(_path)
+
+  if (!path) {
+    // Style fallback metallic avatar
+    scene.traverse((object) => {
+      if (object.isMesh) {
+        object.material.metalness = 1
+        object.material.roughness = 0.1
+        object.material.color.set('white')
+      }
+    })
+  }
 
   /**
    * @type {{

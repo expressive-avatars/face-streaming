@@ -36,13 +36,22 @@ io.of('provider').on('connection', (socket) => {
        */
       socket.join(accountId)
 
+      const primaryConsumer = io.of('consumer').in('primary').in(accountId)
+      const allConsumers = io.of('consumer').in(accountId)
+
       /**
        * Request user status from Hubs
        */
-      io.of('consumer').in('primary').in(accountId).emit('provider_join')
+      socket.on('provider_join', () => {
+        primaryConsumer.emit('provider_join')
+      })
+
+      socket.on('state', (...args) => {
+        primaryConsumer.emit('state', ...args)
+      })
 
       socket.on('face', (data) => {
-        io.of('consumer').in(accountId).volatile.emit('face', data)
+        allConsumers.volatile.emit('face', data)
       })
     }
   } else {
@@ -55,8 +64,6 @@ io.of('consumer', (socket) => {
   const query = socket.handshake.query
 
   socket.join(query.type)
-
-  console.log('consumer?')
 
   if (query.type === 'primary' && query.token && query.networkId) {
     const accountId = jwtDecode(query.token).sub
@@ -71,26 +78,36 @@ io.of('consumer', (socket) => {
     // Associate networkId with accountId for future peers
     records[query.networkId] = accountId
 
-    socket.on('rooms', (callback) => {
-      console.log('requesting rooms')
-      callback(Array.from(socket.rooms))
-    })
+    const iOSDevice = io.of('provider').in(accountId)
 
+    // Forward latest hub name from desktop to iOS
     socket.on('hub_name', (name) => {
-      io.of('provider').in(accountId).emit('hub_name', name)
+      iOSDevice.emit('hub_name', name)
     })
 
+    // Forward latest avatar URL from desktop to iOS
     socket.on('avatar_url', (url) => {
-      io.of('provider').in(accountId).emit('avatar_url', url)
+      iOSDevice.emit('avatar_url', url)
+    })
+
+    // Desktop wants iOS to perform an action (e.g. calibrate, pause)
+    socket.on('action', (...args) => {
+      iOSDevice.emit('action', ...args)
+    })
+    socket.on('state', (...args) => {
+      iOSDevice.emit('state', ...args)
     })
 
     socket.on('disconnect', () => {
       delete records[query.networkId]
-      io.of('provider').in(accountId).emit('hub_name', undefined)
-      io.of('provider').in(accountId).emit('avatar_url', undefined)
+      iOSDevice.emit('hub_name', undefined)
+      iOSDevice.emit('avatar_url', undefined)
     })
   } else if (query.type === 'peer') {
+    // Join room with networkId initially, in case we join before primary consumer
     socket.join(query.networkId)
+
+    // If primary consumer already joined, then use the existing accountId record
     const accountId = records[query.networkId]
     if (accountId) socket.join(accountId)
   }

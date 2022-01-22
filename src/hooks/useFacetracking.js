@@ -1,14 +1,13 @@
-import { useContext, useEffect } from 'react'
-import { FacetrackingContext } from '@/context/FacetrackingContext'
+import { useEffect } from 'react'
+import { store } from '@/store'
 
 /**
  *
- * @param {import('@/context/FacetrackingContext').FacetrackingCallback} fn
+ * @param {import('@/store').FacetrackingCallback} fn
  */
 export function useFacetracking(fn) {
-  const { register } = useContext(FacetrackingContext)
   useEffect(() => {
-    const unregister = register(fn)
+    const unregister = store.register(fn)
     return unregister
   }, [fn])
 }

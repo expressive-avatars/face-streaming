@@ -11,8 +11,31 @@ const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
 const euler = new THREE.Euler()
 
-export function FacetrackingManager() {
+export function FacetrackingManager({ socket }) {
   const [headOrientation] = useState(() => new THREE.Quaternion())
+
+  useEffect(() => {
+    socket.emit('provider_join')
+
+    const actionListener = (type) => {
+      switch (type) {
+        case 'calibrate':
+          store.calibrate()
+          break
+      }
+    }
+    const stateListener = (stateUpdate) => {
+      for (let key in stateUpdate) {
+        store[key] = stateUpdate[key]
+      }
+    }
+    socket.on('action', actionListener)
+    socket.on('state', stateListener)
+    return () => {
+      socket.removeListener('action', actionListener)
+      socket.removeListener('state', stateListener)
+    }
+  }, [socket])
 
   const session = useXRSession((session) => {
     if (session) {

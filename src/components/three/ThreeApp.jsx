@@ -16,7 +16,7 @@ import { FacetrackingManager } from '@/components/three/FacetrackingManager'
 import { useCredentials } from '@/hooks/useCredentials'
 import { useSocket } from '@/hooks/useSocket'
 import { useAspect } from '@/hooks/useAspect'
-import { useStore } from '@/store'
+import { useStore, store } from '@/store'
 import { Curtain } from './Curtain'
 
 export function ThreeApp() {
@@ -29,25 +29,20 @@ export function ThreeApp() {
     ar.start()
   }
 
-  const { token } = useCredentials()
-  const socket = useSocket(import.meta.env.VITE_BACKEND + '/provider', {
-    query: { token },
-  })
+  const snap = useStore()
 
   // Listen for hub name
   const [hubName, setHubName] = useState()
   useEffect(() => {
     const listener = (val) => setHubName(val)
-    socket.on('hub_name', listener)
-    return () => socket.removeListener('hub_name', listener)
-  }, [socket])
-
-  const snap = useStore()
+    snap.socket.on('hub_name', listener)
+    return () => snap.socket.removeListener('hub_name', listener)
+  }, [snap.socket])
 
   return (
     <>
       <ARCanvas onCreated={onCreated}>
-        <ThreeScene socket={socket} />
+        <ThreeScene socket={snap.socket} />
       </ARCanvas>
       {createPortal(<Overlay hubName={hubName} />, ar.domOverlay.root)}
     </>
@@ -90,7 +85,7 @@ function ThreeScene({ socket }) {
       {hideScene && <Curtain color="white" />}
 
       <Environment preset="apartment" background />
-      <FacetrackingManager />
+      <FacetrackingManager socket={socket} />
       <FacetrackingSender socket={socket} />
       <AttachToCamera>
         <group position-z={landscape ? -6 : -5} scale={10}>

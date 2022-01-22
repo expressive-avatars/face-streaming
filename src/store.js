@@ -4,6 +4,10 @@ import io from 'socket.io-client'
 
 import { getCookie } from '@/utils/getCookie'
 
+/**
+ *
+ * @returns {?{email: ?string, token: ?string}}
+ */
 function getCredentials() {
   if (import.meta.env.MODE === 'development') {
     return {
@@ -30,21 +34,35 @@ class State {
   needsCalibration = true
   paused = false
   previewHidden = false
+  hubName = null
+  avatarURL = null
   calibrationOrientation = ref(new THREE.Quaternion())
   subscribers = ref(/** @type {Set<FacetrackingCallback>} */ (new Set()))
-  credentials = ref(getCredentials())
-  socket = ref(
-    io(import.meta.env.VITE_BACKEND + '/provider', {
-      query: { token: this.credentials.token },
-    })
-  )
+  credentials = getCredentials()
+  socket = null
 
   // ACTIONS
-  /**
-   *
-   * @param {FacetrackingCallback} fn
-   * @returns
-   */
+  initSocket() {
+    const socket = io(import.meta.env.VITE_BACKEND + '/provider', {
+      query: { token: this.credentials.token },
+    })
+
+    socket.on('state', (partial) => {
+      console.log('state', partial)
+      Object.assign(this, partial)
+    })
+    socket.on('action', (type) => {
+      switch (type) {
+        case 'calibrate':
+          store.calibrate()
+          break
+      }
+    })
+
+    this.socket = ref(socket)
+    return this.socket
+  }
+  /** @param {FacetrackingCallback} fn */
   register(fn) {
     this.subscribers.add(fn)
     const unregister = () => this.subscribers.delete(fn)

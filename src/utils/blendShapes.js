@@ -1,9 +1,4 @@
 /**
- * @typedef {keyof mirrorMap} BlendShapeName
- * @typedef {Record<BlendShapeName, number>} BlendShapes
- */
-
-/**
  * @param {BlendShapes} blendShapes
  * @returns {BlendShapes}
  */
@@ -18,61 +13,85 @@ export function remapBlendShapes(blendShapes) {
   )
 }
 
+/** @type {Partial<BlendShapes>} */
 const scaling = {
   mouthSmileLeft: 0.6,
   mouthSmileRight: 0.6,
 }
 
-const mirrorMap = {
-  browDownLeft: 'browDownRight',
-  browDownRight: 'browDownLeft',
-  browInnerUp: 'browInnerUp',
-  browOuterUpLeft: 'browOuterUpRight',
-  browOuterUpRight: 'browOuterUpLeft',
-  cheekPuff: 'cheekPuff',
-  cheekSquintLeft: 'cheekSquintRight',
-  cheekSquintRight: 'cheekSquintLeft',
-  eyeBlinkLeft: 'eyeBlinkRight',
-  eyeBlinkRight: 'eyeBlinkLeft',
-  eyeLookDownLeft: 'eyeLookDownRight',
-  eyeLookDownRight: 'eyeLookDownLeft',
-  eyeLookInLeft: 'eyeLookInRight',
-  eyeLookInRight: 'eyeLookInLeft',
-  eyeLookOutLeft: 'eyeLookOutRight',
-  eyeLookOutRight: 'eyeLookOutLeft',
-  eyeLookUpLeft: 'eyeLookUpRight',
-  eyeLookUpRight: 'eyeLookUpLeft',
-  eyeSquintLeft: 'eyeSquintRight',
-  eyeSquintRight: 'eyeSquintLeft',
-  eyeWideLeft: 'eyeWideRight',
-  eyeWideRight: 'eyeWideLeft',
-  jawForward: 'jawForward',
-  jawLeft: 'jawRight',
-  jawOpen: 'jawOpen',
-  jawRight: 'jawLeft',
-  mouthClose: 'mouthClose',
-  mouthDimpleLeft: 'mouthDimpleRight',
-  mouthDimpleRight: 'mouthDimpleLeft',
-  mouthFrownLeft: 'mouthFrownRight',
-  mouthFrownRight: 'mouthFrownLeft',
-  mouthFunnel: 'mouthFunnel',
-  mouthLeft: 'mouthRight',
-  mouthLowerDownLeft: 'mouthLowerDownRight',
-  mouthLowerDownRight: 'mouthLowerDownLeft',
-  mouthPressLeft: 'mouthPressRight',
-  mouthPressRight: 'mouthPressLeft',
-  mouthPucker: 'mouthPucker',
-  mouthRight: 'mouthLeft',
-  mouthRollLower: 'mouthRollLower',
-  mouthRollUpper: 'mouthRollUpper',
-  mouthShrugLower: 'mouthShrugLower',
-  mouthShrugUpper: 'mouthShrugUpper',
-  mouthSmileLeft: 'mouthSmileRight',
-  mouthSmileRight: 'mouthSmileLeft',
-  mouthStretchLeft: 'mouthStretchRight',
-  mouthStretchRight: 'mouthStretchLeft',
-  mouthUpperUpLeft: 'mouthUpperUpRight',
-  mouthUpperUpRight: 'mouthUpperUpLeft',
-  noseSneerLeft: 'noseSneerRight',
-  noseSneerRight: 'noseSneerLeft',
+/**
+ * @typedef {typeof blendShapeNames[number]} BlendShapeName
+ * @typedef {Record<BlendShapeName, number>} BlendShapes
+ */
+
+export const blendShapeNames = /** @type {const} */ ([
+  'browDownLeft',
+  'browDownRight',
+  'browInnerUp',
+  'browOuterUpLeft',
+  'browOuterUpRight',
+  'cheekPuff',
+  'cheekSquintLeft',
+  'cheekSquintRight',
+  'eyeBlinkLeft',
+  'eyeBlinkRight',
+  'eyeLookDownLeft',
+  'eyeLookDownRight',
+  'eyeLookInLeft',
+  'eyeLookInRight',
+  'eyeLookOutLeft',
+  'eyeLookOutRight',
+  'eyeLookUpLeft',
+  'eyeLookUpRight',
+  'eyeSquintLeft',
+  'eyeSquintRight',
+  'eyeWideLeft',
+  'eyeWideRight',
+  'jawForward',
+  'jawLeft',
+  'jawOpen',
+  'jawRight',
+  'mouthClose',
+  'mouthDimpleLeft',
+  'mouthDimpleRight',
+  'mouthFrownLeft',
+  'mouthFrownRight',
+  'mouthFunnel',
+  'mouthLeft',
+  'mouthLowerDownLeft',
+  'mouthLowerDownRight',
+  'mouthPressLeft',
+  'mouthPressRight',
+  'mouthPucker',
+  'mouthRight',
+  'mouthRollLower',
+  'mouthRollUpper',
+  'mouthShrugLower',
+  'mouthShrugUpper',
+  'mouthSmileLeft',
+  'mouthSmileRight',
+  'mouthStretchLeft',
+  'mouthStretchRight',
+  'mouthUpperUpLeft',
+  'mouthUpperUpRight',
+  'noseSneerLeft',
+  'noseSneerRight',
+])
+
+/** @type {(name: BlendShapeName) => BlendShapeName} */
+const doMirror = (name) => {
+  if (name.includes('Right')) {
+    return name.replace('Right', 'Left')
+  } else {
+    return name.replace('Left', 'Right')
+  }
 }
+
+/**
+ * Maps e.g. "mouthSmileRight" -> "mouthSmileLeft"
+ * because WebXRViewer reads mirrored blendShape values
+ */
+const mirrorMap = Object.fromEntries(blendShapeNames.map((name) => [name, doMirror(name)]))
+
+/** @type {BlendShapes} */
+export const initialBlendShapes = Object.fromEntries(blendShapeNames.map((name) => [name, 0]))

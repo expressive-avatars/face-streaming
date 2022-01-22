@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import { useXRSession } from '@/hooks/useXRSession'
 import { useReferenceSpace } from '@/hooks/useReferenceSpace'
 import { store, useStore } from '@/store'
-import { remapBlendShapes } from '@/utils/blendShapes'
+import { initialBlendShapes, remapBlendShapes } from '@/utils/blendShapes'
 
 const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
@@ -24,6 +24,13 @@ export function FacetrackingManager() {
     }
   })
 
+  const resetFace = () => {
+    headOrientation.identity()
+    store.subscribers.forEach((callbackFn) => {
+      callbackFn(initialBlendShapes, headOrientation)
+    })
+  }
+
   const snap = useStore()
   useEffect(() => {
     if (session) {
@@ -34,6 +41,9 @@ export function FacetrackingManager() {
       })
     }
     // TODO reset headorientation and blendshapes when paused
+    if (snap.paused) {
+      resetFace()
+    }
   }, [snap.paused])
 
   const localReferenceSpace = useReferenceSpace('local')

@@ -13,8 +13,6 @@ import { Spin } from '@/components/three/Spin'
 import { ReadyPlayerMeAvatar } from '@/components/three/ReadyPlayerMeAvatar'
 import { FacetrackingManager } from '@/components/three/FacetrackingManager'
 
-import { useCredentials } from '@/hooks/useCredentials'
-import { useSocket } from '@/hooks/useSocket'
 import { useAspect } from '@/hooks/useAspect'
 import { useStore, store } from '@/store'
 import { Curtain } from './Curtain'
@@ -29,27 +27,22 @@ export function ThreeApp() {
     ar.start()
   }
 
-  const snap = useStore()
-
-  // Listen for hub name
-  const [hubName, setHubName] = useState()
+  // Begin socket connection
   useEffect(() => {
-    const listener = (val) => setHubName(val)
-    snap.socket.on('hub_name', listener)
-    return () => snap.socket.removeListener('hub_name', listener)
-  }, [snap.socket])
+    store.initSocket()
+  }, [])
 
   return (
     <>
       <ARCanvas onCreated={onCreated}>
-        <ThreeScene socket={snap.socket} />
+        <ThreeScene />
       </ARCanvas>
-      {createPortal(<Overlay hubName={hubName} />, ar.domOverlay.root)}
+      {createPortal(<Overlay />, ar.domOverlay.root)}
     </>
   )
 }
 
-function Overlay({ hubName }) {
+function Overlay() {
   const snap = useStore()
   return (
     <>
@@ -61,20 +54,15 @@ function Overlay({ hubName }) {
           </p>
         </div>
       )}
-      {snap.trackingStarted ? <TrackingPanel hubName={hubName} /> : <SwitchCameraPrompt />}
+      {snap.trackingStarted ? <TrackingPanel hubName={snap.hubName} /> : <SwitchCameraPrompt />}
     </>
   )
 }
 
-function ThreeScene({ socket }) {
-  // Listen for hub name
-  const [avatarURL, setAvatarURL] = useState()
-  useEffect(() => {
-    const listener = (val) => setAvatarURL(val)
-    socket.on('avatar_url', listener)
-    return () => socket.removeListener('avatar_url', listener)
-  }, [socket])
+function ThreeScene() {
   const snap = useStore()
+  const socket = snap.socket
+
   const aspect = useAspect()
   const landscape = aspect > 1
 
@@ -90,7 +78,7 @@ function ThreeScene({ socket }) {
         <AttachToCamera>
           <group position-z={landscape ? -6 : -5} scale={10}>
             <group position={[0, -0.6, 0]} scale-x={-1}>
-              <ReadyPlayerMeAvatar path={avatarURL} />
+              <ReadyPlayerMeAvatar path={snap.avatarURL} />
             </group>
           </group>
         </AttachToCamera>

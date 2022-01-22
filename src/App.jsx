@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/dom/Button'
-import { SwitchCameraPrompt } from '@/components/dom/SwitchCameraPrompt'
-import { useCredentials } from '@/hooks/useCredentials'
 import { ThreeApp } from '@/components/three/ThreeApp'
+import { useStore } from './store'
 
 export default function App() {
   const [startedAR, setStartedAR] = useState(false)
@@ -14,11 +13,11 @@ export default function App() {
 }
 
 function LandingPage({ onStartAR }) {
-  const credentials = useCredentials()
+  const snap = useStore()
   return (
     <div className="flex flex-col justify-center items-center w-full h-full">
       <img alt="Augmented Environments Lab logo" src="/ael-logo.jpg" width={200} />
-      {credentials ? <SignedIn onStartAR={onStartAR} /> : <SignedOut />}
+      {snap.credentials ? <SignedIn onStartAR={onStartAR} /> : <SignedOut />}
     </div>
   )
 }
@@ -33,13 +32,13 @@ function SignedOut() {
 }
 
 function SignedIn({ onStartAR }) {
-  const { email } = useCredentials()
+  const snap = useStore()
   const signInURL = createSigninURL()
   return (
     <>
       <div className="mb-6 text-center">
         <p>
-          Signed in as <span className="font-semibold">{formatEmail(email)}</span>
+          Signed in as <span className="font-semibold">{formatEmail(snap.credentials.email)}</span>
         </p>
         <a className="text-hubs-blue hover:text-hubs-lightblue" href={signInURL}>
           Switch account

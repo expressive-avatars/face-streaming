@@ -42,9 +42,7 @@ io.of('provider').on('connection', (socket) => {
       /**
        * Request user status from Hubs
        */
-      socket.on('provider_join', () => {
-        primaryConsumer.emit('provider_join')
-      })
+      primaryConsumer.emit('provider_join')
 
       socket.on('state', (...args) => {
         primaryConsumer.emit('state', ...args)

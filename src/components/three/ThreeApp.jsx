@@ -17,6 +17,7 @@ import { FacetrackingManager } from '@/components/three/FacetrackingManager'
 
 import { useCredentials } from '@/hooks/useCredentials'
 import { useSocket } from '@/hooks/useSocket'
+import { useAspect } from '@/hooks/useAspect'
 import { useStore } from '@/store'
 import { Curtain } from './Curtain'
 
@@ -64,6 +65,9 @@ function ThreeScene({ socket }) {
     return () => socket.removeListener('avatar_url', listener)
   }, [socket])
   const snap = useStore()
+  const aspect = useAspect()
+  const landscape = aspect > 1
+
   return (
     <Suspense fallback={null}>
       {!snap.trackingStarted && <Curtain color="white" />}
@@ -72,7 +76,7 @@ function ThreeScene({ socket }) {
       <FacetrackingManager />
       <FacetrackingSender socket={socket} />
       <AttachToCamera>
-        <group position-z={-5} scale={10}>
+        <group position-z={landscape ? -6 : -5} scale={10}>
           <group position={[0, -0.6, 0]} scale-x={-1}>
             {avatarURL ? <ReadyPlayerMeAvatar path={avatarURL} /> : <FacelessAvatar />}
           </group>

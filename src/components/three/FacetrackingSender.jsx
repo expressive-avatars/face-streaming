@@ -7,11 +7,20 @@ import { useEffect } from 'react'
  * Should be placed within an <ARCanvas />
  */
 export function FacetrackingSender({ socket }) {
-  // Listen for calibration requests
+  // Listen for action requests
   useEffect(() => {
-    const listener = () => store.calibrate()
-    socket.on('calibrate', listener)
-    return () => socket.removeListener('calibrate', listener)
+    const listener = (type) => {
+      switch (type) {
+        case 'calibrate':
+          store.calibrate()
+          break
+        case 'pause':
+          store.togglePause()
+          break
+      }
+    }
+    socket.on('action', listener)
+    return () => socket.removeListener('action', listener)
   }, [socket])
 
   useFacetracking((blendShapes, headOrientation) => {

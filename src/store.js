@@ -29,6 +29,9 @@ class State {
   calibrate() {
     this.needsCalibrate = true
   }
+  togglePause() {
+    this.paused = !this.paused
+  }
 }
 
 export const store = proxy(new State())

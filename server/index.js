@@ -83,9 +83,9 @@ io.of('consumer', (socket) => {
       pairedDevice.emit('avatar_url', url)
     })
 
-    // Desktop wants iOS to calibrate
-    socket.on('calibrate', () => {
-      pairedDevice.emit('calibrate')
+    // Desktop wants iOS to perform an action (e.g. calibrate, pause)
+    socket.on('action', (...args) => {
+      pairedDevice.emit('action', ...args)
     })
 
     socket.on('disconnect', () => {

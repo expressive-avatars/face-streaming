@@ -3,13 +3,11 @@ import { Environment } from '@react-three/drei'
 import { Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { Button } from '@/components/dom/Button'
 import { SwitchCameraPrompt } from '@/components/dom/SwitchCameraPrompt'
 import { TrackingPanel } from '@/components/dom/TrackingPanel'
 
 import { ARCanvas } from '@/components/three/ARCanvas'
 import { AttachToCamera } from '@/components/three/AttachToCamera'
-import { FacelessAvatar } from '@/components/three/FacelessAvatar'
 import { FacetrackingSender } from '@/components/three/FacetrackingSender'
 import { Spin } from '@/components/three/Spin'
 import { ReadyPlayerMeAvatar } from '@/components/three/ReadyPlayerMeAvatar'
@@ -97,7 +95,7 @@ function ThreeScene({ socket }) {
       <AttachToCamera>
         <group position-z={landscape ? -6 : -5} scale={10}>
           <group position={[0, -0.6, 0]} scale-x={-1}>
-            {avatarURL ? <ReadyPlayerMeAvatar path={avatarURL} /> : <FacelessAvatar />}
+            <ReadyPlayerMeAvatar path={avatarURL} />
           </group>
         </group>
       </AttachToCamera>

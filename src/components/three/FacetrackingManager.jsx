@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useXRFrame } from '@react-three/xr'
 import * as THREE from 'three'
 
 import { useXRSession } from '@/hooks/useXRSession'
 import { useReferenceSpace } from '@/hooks/useReferenceSpace'
-import { store } from '@/store'
+import { store, useStore } from '@/store'
 import { remapBlendShapes } from '@/utils/blendShapes'
 
 const localHeadMatrix = new THREE.Matrix4()
@@ -14,7 +14,7 @@ const euler = new THREE.Euler()
 export function FacetrackingManager() {
   const [headOrientation] = useState(() => new THREE.Quaternion())
 
-  useXRSession((session) => {
+  const session = useXRSession((session) => {
     if (session) {
       session.updateWorldSensingState({
         meshDetectionState: {
@@ -23,6 +23,19 @@ export function FacetrackingManager() {
       })
     }
   })
+
+  const snap = useStore()
+  useEffect(() => {
+    if (session) {
+      session.updateWorldSensingState({
+        meshDetectionState: {
+          enabled: !snap.paused,
+        },
+      })
+    }
+    // TODO reset headorientation and blendshapes when paused
+  }, [snap.paused])
+
   const localReferenceSpace = useReferenceSpace('local')
   const viewerReferenceSpace = useReferenceSpace('viewer')
 

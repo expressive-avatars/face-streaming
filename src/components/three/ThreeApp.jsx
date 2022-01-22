@@ -51,7 +51,24 @@ export function ThreeApp() {
       <ARCanvas onCreated={onCreated}>
         <ThreeScene socket={socket} />
       </ARCanvas>
-      {createPortal(snap.trackingStarted ? <TrackingPanel hubName={hubName} /> : <SwitchCameraPrompt />, ar.domOverlay.root)}
+      {createPortal(<Overlay hubName={hubName} />, ar.domOverlay.root)}
+    </>
+  )
+}
+
+function Overlay({ hubName }) {
+  const snap = useStore()
+  return (
+    <>
+      {snap.previewHidden && (
+        <div className="fixed w-screen h-screen grid text-center place-content-center gap-4">
+          <p className="text-hubs-gray">(Preview hidden)</p>
+          <p className="text-xl text-black">
+            Facetracking is <b className="text-black underline">{snap.paused ? 'PAUSED' : 'ACTIVE'}</b>
+          </p>
+        </div>
+      )}
+      {snap.trackingStarted ? <TrackingPanel hubName={hubName} /> : <SwitchCameraPrompt />}
     </>
   )
 }
@@ -68,9 +85,11 @@ function ThreeScene({ socket }) {
   const aspect = useAspect()
   const landscape = aspect > 1
 
+  const hideScene = snap.previewHidden || !snap.trackingStarted
+
   return (
     <Suspense fallback={null}>
-      {!snap.trackingStarted && <Curtain color="white" />}
+      {hideScene && <Curtain color="white" />}
 
       <Environment preset="apartment" background />
       <FacetrackingManager />

@@ -10,6 +10,8 @@ class State {
   // DATA
   trackingStarted = false
   needsCalibration = true
+  paused = false
+  previewHidden = false
   calibrationOrientation = ref(new THREE.Quaternion())
   subscribers = ref(/** @type {Set<FacetrackingCallback>} */ (new Set()))
 

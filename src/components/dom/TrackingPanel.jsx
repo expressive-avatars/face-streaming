@@ -1,8 +1,9 @@
-import { store } from '@/store'
+import { store, useStore } from '@/store'
 import { Button } from './Button'
 
 export function TrackingPanel({ hubName }) {
   const onClickRecenter = () => store.calibrate()
+  const snap = useStore()
   return (
     <div className="fixed bottom-0 flex justify-center w-full">
       <div className="bg-white rounded-t-lg shadow-lg w-[450px] mx-8 p-8 flex flex-col items-center gap-4">
@@ -14,8 +15,15 @@ export function TrackingPanel({ hubName }) {
           <p className="text-hubs-gray">{hubName ?? 'Join a compatible room on Hubs desktop'}</p>
         </div>
         <span className="flex gap-4">
-          <Button onClick={onClickRecenter}>Recenter</Button>
-          <Button>Pause</Button>
+          <Button onClick={onClickRecenter}>
+            <span className="bx bx-target-lock text-[20px]" /> Recenter
+          </Button>
+          <Button primary={snap.paused} className={`w-[50px]`} onClick={() => (store.paused = !store.paused)}>
+            {snap.paused ? <span className="bx bx-play scale-[2]" /> : <span className="bx bx-pause scale-[2]" />}
+          </Button>
+          <Button primary={snap.previewHidden} className={`w-[50px]`} onClick={() => (store.previewHidden = !store.previewHidden)}>
+            {snap.previewHidden ? <span className="bx bx-show scale-[2]" /> : <span className="bx bx-hide scale-[2]" />}
+          </Button>
         </span>
       </div>
     </div>

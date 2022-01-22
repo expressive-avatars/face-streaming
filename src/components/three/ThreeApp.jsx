@@ -81,19 +81,20 @@ function ThreeScene({ socket }) {
   const hideScene = snap.previewHidden || !snap.trackingStarted
 
   return (
-    <Suspense fallback={null}>
+    <>
       {hideScene && <Curtain color="white" />}
-
-      <Environment preset="apartment" background />
-      <FacetrackingManager socket={socket} />
-      <FacetrackingSender socket={socket} />
-      <AttachToCamera>
-        <group position-z={landscape ? -6 : -5} scale={10}>
-          <group position={[0, -0.6, 0]} scale-x={-1}>
-            <ReadyPlayerMeAvatar path={avatarURL} />
+      <Suspense fallback={null}>
+        <Environment preset="apartment" background />
+        <FacetrackingManager socket={socket} />
+        <FacetrackingSender socket={socket} />
+        <AttachToCamera>
+          <group position-z={landscape ? -6 : -5} scale={10}>
+            <group position={[0, -0.6, 0]} scale-x={-1}>
+              <ReadyPlayerMeAvatar path={avatarURL} />
+            </group>
           </group>
-        </group>
-      </AttachToCamera>
-    </Suspense>
+        </AttachToCamera>
+      </Suspense>
+    </>
   )
 }

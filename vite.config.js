@@ -11,7 +11,7 @@ const commonConfig = ({ mode }) => {
     base: './',
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve('./src'),
       },
     },
     server: {
@@ -45,7 +45,7 @@ export default defineConfig((configEnv) => {
       build: {
         outDir: mode === 'development' ? '_lib/lib' : 'dist/lib',
         lib: {
-          entry: path.resolve(__dirname, 'lib/index.js'),
+          entry: path.resolve('lib/index.js'),
           formats: ['es'],
           fileName: () => `index.js`,
         },

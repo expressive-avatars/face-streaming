@@ -1,6 +1,7 @@
 {
   "name": "face-streaming-client",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"yarn dev:app\" \"yarn dev:server\" \"yarn dev:lib\" \"yarn serve:lib\"",
     "tunnel": "ngrok start --all --config ngrok.yaml",

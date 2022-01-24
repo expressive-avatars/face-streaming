@@ -1,7 +1,8 @@
-const express = require('express')
-const { createServer } = require('http')
-const { Server } = require('socket.io')
-const jwtDecode = require('jwt-decode')
+import express from 'express'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import jwtDecode from 'jwt-decode'
+import { initialBlendShapes } from '../src/utils/blendShapes.js'
 
 const port = process.env.PORT || 5000
 
@@ -51,6 +52,11 @@ io.of('provider').on('connection', (socket) => {
       socket.on('face', (data) => {
         allConsumers.volatile.emit('face', data)
       })
+
+      socket.on('disconnect', () => {
+        // Reset face
+        allConsumers.volatile.emit('face', { blendShapes: initialBlendShapes, headOrientation: [0, 0, 0, 1] })
+      })
     }
   } else {
     console.error('Invalid provider query:\n', JSON.stringify(query, null, 2))
@@ -98,8 +104,7 @@ io.of('consumer', (socket) => {
 
     socket.on('disconnect', () => {
       delete records[query.networkId]
-      iOSDevice.emit('hub_name', undefined)
-      iOSDevice.emit('avatar_url', undefined)
+      iOSDevice.emit('state', { hubName: null, avatarURL: null })
     })
   } else if (query.type === 'peer') {
     // Join room with networkId initially, in case we join before primary consumer

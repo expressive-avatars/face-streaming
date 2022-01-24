@@ -98,8 +98,7 @@ io.of('consumer', (socket) => {
 
     socket.on('disconnect', () => {
       delete records[query.networkId]
-      iOSDevice.emit('hub_name', undefined)
-      iOSDevice.emit('avatar_url', undefined)
+      iOSDevice.emit('state', { hubName: null, avatarURL: null })
     })
   } else if (query.type === 'peer') {
     // Join room with networkId initially, in case we join before primary consumer

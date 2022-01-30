@@ -1,7 +1,7 @@
 import { ARManager } from '@/utils/ARManager'
-import { Environment } from '@react-three/drei'
 import { Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import * as THREE from 'three'
 
 import { SwitchCameraPrompt } from '@/components/dom/SwitchCameraPrompt'
 import { TrackingPanel } from '@/components/dom/TrackingPanel'
@@ -16,6 +16,8 @@ import { FacetrackingManager } from '@/components/three/FacetrackingManager'
 import { useAspect } from '@/hooks/useAspect'
 import { useStore, store } from '@/store'
 import { Curtain } from './Curtain'
+import { Background } from './Background'
+import { useXR } from '@react-three/xr'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -66,19 +68,26 @@ function ThreeScene() {
   const aspect = useAspect()
   const landscape = aspect > 1
 
+  const { isPresenting } = useXR()
+
   const hideScene = snap.previewHidden || !snap.trackingStarted
 
   return (
     <>
       {hideScene && <Curtain color="white" />}
       <Suspense fallback={null}>
-        <Environment preset="apartment" background />
+        <group>
+          <ambientLight />
+          <directionalLight position={[1, 1, 1]} />
+          <directionalLight position={[-1, 1, -1]} />
+        </group>
+        <Background color="lightblue" />
         <FacetrackingManager socket={socket} />
         <FacetrackingSender socket={socket} />
         <AttachToCamera>
           <group position-z={landscape ? -6 : -5} scale={10}>
             <group position={[0, -0.6, 0]} scale-x={-1}>
-              <ReadyPlayerMeAvatar path={snap.avatarURL} />
+              {isPresenting && <ReadyPlayerMeAvatar path={snap.avatarURL} />}
             </group>
           </group>
         </AttachToCamera>

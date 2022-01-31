@@ -25,7 +25,8 @@ function getCredentials() {
 
 /**
  * @typedef {import('./utils/blendShapes').BlendShapes} BlendShapes
- * @typedef {(blendShapes: BlendShapes, headOrientation: THREE.Quaternion) => void} FacetrackingCallback
+ * @typedef {{ blendShapes: BlendShapes, headOrientation: THREE.Quaternion, eyeOrientation: THREE.Quaternion }} FacetrackingPayload
+ * @typedef {(payload: FacetrackingPayload) => void} FacetrackingCallback
  */
 
 class State {
@@ -36,7 +37,11 @@ class State {
   previewHidden = false
   hubName = null
   avatarURL = null
-  calibrationOrientation = ref(new THREE.Quaternion())
+
+  // Reference orientations for calibration
+  baseHeadOrientation = ref(new THREE.Quaternion())
+  baseEyeOrientation = ref(new THREE.Quaternion())
+
   subscribers = ref(/** @type {Set<FacetrackingCallback>} */ (new Set()))
   credentials = getCredentials()
   socket = null

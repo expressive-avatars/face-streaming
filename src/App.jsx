@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/dom/Button'
 import { ThreeApp } from '@/components/three/ThreeApp'
+import { FacetrackingDebugger } from '@/components/three/FacetrackingDebugger'
 import { useStore } from './store'
 
 export default function App() {
@@ -9,7 +10,8 @@ export default function App() {
     console.log('starting XR session')
     setStartedAR(true)
   }
-  return startedAR ? <ThreeApp /> : <LandingPage onStartAR={onStartAR} />
+  return <FacetrackingDebugger />
+  // return startedAR ? <ThreeApp /> : <LandingPage onStartAR={onStartAR} />
 }
 
 function LandingPage({ onStartAR }) {

@@ -45,7 +45,7 @@ export function ReadyPlayerMeAvatar({ path }) {
     return { bones, meshes, morphers }
   }, [path])
 
-  useFacetracking((blendShapes, headOrientation) => {
+  useFacetracking(({ blendShapes, headOrientation }) => {
     // Update bones
     bones.head.setRotationFromQuaternion(headOrientation)
 

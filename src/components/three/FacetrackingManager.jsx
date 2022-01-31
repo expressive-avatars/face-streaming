@@ -11,8 +11,8 @@ const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
 const euler = new THREE.Euler()
 
-export function FacetrackingManager({ socket }) {
-  const [headOrientation] = useState(() => new THREE.Quaternion())
+export function FacetrackingManager() {
+  const [[headOrientation, eyeOrientation]] = useState(() => [new THREE.Quaternion(), new THREE.Quaternion()])
 
   const session = useXRSession((session) => {
     if (session) {
@@ -26,8 +26,13 @@ export function FacetrackingManager({ socket }) {
 
   const resetFace = () => {
     headOrientation.identity()
+    eyeOrientation.identity()
     store.subscribers.forEach((callbackFn) => {
-      callbackFn(initialBlendShapes, headOrientation)
+      callbackFn({
+        blendShapes: initialBlendShapes,
+        headOrientation,
+        eyeOrientation,
+      })
     })
   }
 
@@ -74,13 +79,13 @@ export function FacetrackingManager({ socket }) {
 
           // Calibration
           if (store.needsCalibrate) {
-            store.calibrationOrientation.copy(headOrientation).invert()
+            store.baseHeadOrientation.copy(headOrientation).invert()
             store.needsCalibrate = false
           }
-          headOrientation.premultiply(store.calibrationOrientation)
+          headOrientation.premultiply(store.baseHeadOrientation)
 
           store.subscribers.forEach((callbackFn) => {
-            callbackFn(blendShapes, headOrientation)
+            callbackFn({ blendShapes, headOrientation, eyeOrientation })
           })
 
           if (!store.trackingStarted) {

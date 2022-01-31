@@ -61,7 +61,6 @@ function Overlay() {
 
 function ThreeScene() {
   const snap = useStore()
-  const socket = snap.socket
 
   const aspect = useAspect()
   const landscape = aspect > 1
@@ -73,8 +72,8 @@ function ThreeScene() {
       {hideScene && <Curtain color="white" />}
       <Suspense fallback={null}>
         <Environment preset="apartment" background />
-        <FacetrackingManager socket={socket} />
-        <FacetrackingSender socket={socket} />
+        <FacetrackingManager />
+        <FacetrackingSender />
         <AttachToCamera>
           <group position-z={landscape ? -6 : -5} scale={10}>
             <group position={[0, -0.6, 0]} scale-x={-1}>

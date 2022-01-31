@@ -46,8 +46,9 @@ export default defineConfig((configEnv) => {
         outDir: mode === 'development' ? '_lib/lib' : 'dist/lib',
         lib: {
           entry: path.resolve('lib/index.js'),
-          formats: ['es'],
+          formats: ['iife'],
           fileName: () => `index.js`,
+          name: 'AEL',
         },
       },
     }

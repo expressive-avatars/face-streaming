@@ -10,7 +10,7 @@
     "dev:lib": "LIBRARY_MODE=true vite build --watch --mode=development",
     "build": "yarn build:app && yarn build:lib",
     "build:app": "vite build",
-    "build:lib": "LIBRARY_MODE=true vite build",
+    "build:lib": "LIBRARY_MODE=true vite build --mode=production",
     "serve:lib": "live-server _lib --port=4000 --no-browser --cors --quiet",
     "preview": "live-server dist --no-browser --cors"
   },

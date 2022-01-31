@@ -39,8 +39,8 @@ class State {
   avatarURL = null
 
   // Reference orientations for calibration
-  baseHeadOrientation = ref(new THREE.Quaternion())
-  baseEyeOrientation = ref(new THREE.Quaternion())
+  headCalibration = ref(new THREE.Quaternion())
+  baseEyeEuler = ref(new THREE.Euler())
 
   subscribers = ref(/** @type {Set<FacetrackingCallback>} */ (new Set()))
   credentials = getCredentials()

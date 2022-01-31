@@ -29,19 +29,30 @@ export function FacetrackingDebugger() {
 
 function Scene() {
   /** @type {React.RefObject<THREE.Object3D>} */
-  const ref = useRef()
+  const head = useRef()
+  const eye = useRef()
 
-  useFacetracking(({ headOrientation }) => {
-    ref.current.quaternion.copy(headOrientation)
+  useFacetracking(({ headOrientation, eyeOrientation }) => {
+    head.current.quaternion.copy(headOrientation)
+    eye.current.quaternion.copy(eyeOrientation)
   })
 
   return (
     <group>
       <FacetrackingManager />
       <AttachToCamera>
-        <group position-z={-3} rotation-y={Math.PI}>
-          <group ref={ref}>
-            <axesHelper />
+        <group position-z={-3}>
+          <group ref={head}>
+            <mesh>
+              <boxGeometry />
+              <meshNormalMaterial />
+              <axesHelper />
+            </mesh>
+            <mesh ref={eye} scale={0.3} position={[0, 0, 0.5]}>
+              <boxGeometry />
+              <meshNormalMaterial />
+              <axesHelper />
+            </mesh>
           </group>
         </group>
       </AttachToCamera>

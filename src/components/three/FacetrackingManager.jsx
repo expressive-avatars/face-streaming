@@ -10,6 +10,7 @@ import { initialBlendShapes, remapBlendShapes } from '@/utils/blendShapes'
 const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
 const euler = new THREE.Euler()
+const eyeEuler = new THREE.Euler()
 
 export function FacetrackingManager() {
   const [[headOrientation, eyeOrientation]] = useState(() => [new THREE.Quaternion(), new THREE.Quaternion()])
@@ -71,18 +72,39 @@ export function FacetrackingManager() {
           viewerOrientation.set(q.x, q.y, q.z, q.w)
           headOrientation.premultiply(viewerOrientation)
 
-          // Un-mirror head orientation
+          // Un-mirror head orientation (another WebXR Viewer quirk?)
           euler.setFromQuaternion(headOrientation)
           euler.y = -euler.y
           euler.z = -euler.z
           headOrientation.setFromEuler(euler)
 
+          // Convert eye shapes to orientation
+          const eyeLookLeft = (blendShapes.eyeLookOutLeft + blendShapes.eyeLookInRight) / 2
+          const eyeLookRight = (blendShapes.eyeLookOutRight + blendShapes.eyeLookInLeft) / 2
+          const eyeLookUp = (blendShapes.eyeLookUpLeft + blendShapes.eyeLookUpRight) / 2
+          const eyeLookDown = (blendShapes.eyeLookDownLeft + blendShapes.eyeLookDownRight) / 2
+
+          eyeEuler.y = eyeLookLeft - eyeLookRight
+          eyeEuler.x = eyeLookDown - eyeLookUp
+          eyeEuler.z = 0
+
           // Calibration
           if (store.needsCalibrate) {
-            store.baseHeadOrientation.copy(headOrientation).invert()
+            store.headCalibration.copy(headOrientation).invert()
+            store.baseEyeEuler.copy(eyeEuler)
             store.needsCalibrate = false
           }
-          headOrientation.premultiply(store.baseHeadOrientation)
+          headOrientation.premultiply(store.headCalibration)
+
+          // Eyes remap range
+          eyeEuler.y -= store.baseEyeEuler.y
+          eyeEuler.x -= store.baseEyeEuler.x
+          eyeEuler.y =
+            eyeEuler.y === store.baseEyeEuler.y ? 0 : (eyeEuler.y / (Math.sign(eyeEuler.y) - store.baseEyeEuler.y)) * Math.sign(eyeEuler.y)
+          eyeEuler.x =
+            eyeEuler.x === store.baseEyeEuler.x ? 0 : (eyeEuler.x / (Math.sign(eyeEuler.x) - store.baseEyeEuler.x)) * Math.sign(eyeEuler.x)
+
+          eyeOrientation.setFromEuler(eyeEuler)
 
           store.subscribers.forEach((callbackFn) => {
             callbackFn({ blendShapes, headOrientation, eyeOrientation })

@@ -18,6 +18,7 @@ import { useStore, store } from '@/store'
 import { Curtain } from './Curtain'
 import { Background } from './Background'
 import { useXR } from '@react-three/xr'
+import { Environment } from '@react-three/drei'
 
 export function ThreeApp() {
   const [ar] = useState(() => new ARManager())
@@ -36,7 +37,7 @@ export function ThreeApp() {
 
   return (
     <>
-      <ARCanvas onCreated={onCreated}>
+      <ARCanvas flat onCreated={onCreated}>
         <ThreeScene />
       </ARCanvas>
       {createPortal(<Overlay />, ar.domOverlay.root)}
@@ -76,18 +77,14 @@ function ThreeScene() {
     <>
       {hideScene && <Curtain color="white" />}
       <Suspense fallback={null}>
-        <group>
-          <ambientLight />
-          <directionalLight position={[1, 1, 1]} />
-          <directionalLight position={[-1, 1, -1]} />
-        </group>
+        <Environment preset="apartment" />
         <Background color="lightblue" />
         <FacetrackingManager socket={socket} />
         <FacetrackingSender socket={socket} />
         <AttachToCamera>
           <group position-z={landscape ? -6 : -5} scale={10}>
             <group position={[0, -0.6, 0]} scale-x={-1}>
-              {isPresenting && <ReadyPlayerMeAvatar path={snap.avatarURL} />}
+              <ReadyPlayerMeAvatar path={snap.avatarURL} />
             </group>
           </group>
         </AttachToCamera>

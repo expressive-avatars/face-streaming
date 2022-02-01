@@ -12,6 +12,7 @@ export function ReadyPlayerMeAvatar({ path }) {
     // Style fallback metallic avatar
     scene.traverse((object) => {
       if (object.isMesh) {
+        object.material.metalness = 1
         object.material.roughness = 0.1
         object.material.color.set('white')
       }

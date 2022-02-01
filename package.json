@@ -15,9 +15,9 @@
     "preview": "live-server dist --no-browser --cors"
   },
   "dependencies": {
-    "@react-three/drei": "^8.6.1",
-    "@react-three/fiber": "^7.0.24",
-    "@react-three/xr": "^3.2.0",
+    "@react-three/drei": "^8.7.6",
+    "@react-three/fiber": "^7.0.25",
+    "@react-three/xr": "^3.3.0",
     "express": "^4.17.1",
     "jwt-decode": "^3.1.2",
     "react": "^17.0.2",
@@ -26,8 +26,7 @@
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.3.2",
     "suspend-react": "^0.0.8",
-    "three": "^0.136.0",
-    "twind": "^0.16.16",
+    "three": "^0.137.5",
     "valtio": "^1.2.9"
   },
   "devDependencies": {

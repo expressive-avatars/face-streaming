@@ -3,7 +3,7 @@ import { Button } from '@/components/dom/Button'
 import { ThreeApp } from '@/components/three/ThreeApp'
 import { useStore } from './store'
 
-export default function App() {
+export function App() {
   const [startedAR, setStartedAR] = useState(false)
   const onStartAR = () => {
     console.log('starting XR session')

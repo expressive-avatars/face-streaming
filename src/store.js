@@ -48,7 +48,6 @@ class State {
     })
 
     socket.on('state', (partial) => {
-      console.log('state', partial)
       Object.assign(this, partial)
     })
     socket.on('action', (type) => {

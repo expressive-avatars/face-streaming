@@ -2,7 +2,6 @@ import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import jwtDecode from 'jwt-decode'
-import { initialBlendShapes } from '../src/utils/blendShapes.js'
 
 const port = process.env.PORT || 5000
 
@@ -55,7 +54,7 @@ io.of('provider').on('connection', (socket) => {
 
       socket.on('disconnect', () => {
         // Reset face
-        allConsumers.volatile.emit('face', { blendShapes: initialBlendShapes, headOrientation: [0, 0, 0, 1] })
+        allConsumers.emit('provider_disconnect')
       })
     }
   } else {

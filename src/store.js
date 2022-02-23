@@ -33,6 +33,7 @@ class State {
   trackingStarted = false
   needsCalibration = true
   paused = false
+  mood = 0
   previewHidden = false
   hubName = null
   avatarURL = null

@@ -1,3 +1,5 @@
+import { store } from '@/store'
+
 /**
  * @param {BlendShapes} blendShapes
  * @returns {BlendShapes}
@@ -8,9 +10,52 @@ export function remapBlendShapes(blendShapes) {
       const mirroredName = mirrorMap[name]
       let influence = blendShapes[mirroredName] ?? 0
       influence *= scaling[mirroredName] ?? 1
+      if (store.mood > 0) {
+        influence += Math.abs(store.mood) * (positiveBias[mirroredName] ?? 0)
+      } else {
+        influence += Math.abs(store.mood) * (negativeBias[mirroredName] ?? 0)
+      }
       return [name, influence]
     })
   )
+}
+
+/**
+ * Target for "positive" mood slider
+ * @type {Partial<BlendShapes>}
+ */
+const positiveBias = {
+  mouthSmileLeft: 0.3,
+  mouthSmileRight: 0.3,
+  browInnerUp: 0.25,
+  eyeBlinkLeft: 0.1,
+  eyeBlinkRight: 0.1,
+  mouthPressLeft: 0.2,
+  mouthPressRight: 0.2,
+  mouthShrugLower: 0.17,
+  mouthShrugUpper: 0.15,
+  noseSneerLeft: 0.15,
+  noseSneerRight: 0.15,
+  mouthDimpleLeft: 0.1,
+  mouthDimpleRight: 0.1,
+  mouthStretchLeft: 0.1,
+  mouthStretchRight: 0.1,
+  cheekSquintLeft: 0.1,
+  cheekSquintLeft: 0.1,
+  mouthLowerDownLeft: 0.07,
+  mouthLowerDownRight: 0.07,
+  mouthUpperUpLeft: 0.05,
+  mouthUpperUpRight: 0.05,
+}
+
+/**
+ * Target for "negative" mood slider
+ * @type {Partial<BlendShapes>}
+ */
+const negativeBias = {
+  mouthFrownLeft: 0.6,
+  mouthFrownRight: 0.6,
+  browInnerUp: 0.5,
 }
 
 /** @type {Partial<BlendShapes>} */

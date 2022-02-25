@@ -7,7 +7,6 @@ import fs from 'fs'
 const commonConfig = ({ mode }) => {
   /** @type {import('vite').UserConfig} */
   const config = {
-    plugins: [react()],
     base: './',
     resolve: {
       alias: {
@@ -41,6 +40,11 @@ export default defineConfig((configEnv) => {
   if (process.env.LIBRARY_MODE) {
     return {
       ...commonConfig(configEnv),
+      esbuild: {
+        jsxFactory: 'h',
+        jsxFragment: 'Fragment',
+        jsxInject: `import { h } from 'preact'`,
+      },
       publicDir: false,
       build: {
         outDir: mode === 'development' ? '_lib/lib' : 'dist/lib',
@@ -55,6 +59,7 @@ export default defineConfig((configEnv) => {
   } else {
     return {
       ...commonConfig(configEnv),
+      plugins: [react()],
       publicDir: 'public',
       build: {
         outDir: mode === 'development' ? '_site' : 'dist',

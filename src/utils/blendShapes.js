@@ -1,19 +1,17 @@
-import { store } from '@/store'
-
 /**
  * @param {BlendShapes} blendShapes
  * @returns {BlendShapes}
  */
-export function remapBlendShapes(blendShapes) {
+export function remapBlendShapes(blendShapes, { mood }) {
   return Object.fromEntries(
     Object.keys(mirrorMap).map((name) => {
       const mirroredName = mirrorMap[name]
       let influence = blendShapes[mirroredName] ?? 0
       influence *= scaling[mirroredName] ?? 1
-      if (store.mood > 0) {
-        influence += Math.abs(store.mood) * (positiveBias[mirroredName] ?? 0)
+      if (mood > 0) {
+        influence += Math.abs(mood) * (positiveBias[mirroredName] ?? 0)
       } else {
-        influence += Math.abs(store.mood) * (negativeBias[mirroredName] ?? 0)
+        influence += Math.abs(mood) * (negativeBias[mirroredName] ?? 0)
       }
       return [name, influence]
     })

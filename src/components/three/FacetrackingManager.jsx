@@ -54,7 +54,7 @@ export function FacetrackingManager({ socket }) {
     if (worldInfo.meshes && localReferenceSpace && viewerReferenceSpace) {
       worldInfo.meshes.forEach((worldMesh) => {
         if (worldMesh.changed && worldMesh.blendShapes && worldMesh.modelMatrix) {
-          const blendShapes = remapBlendShapes(worldMesh.blendShapes)
+          const blendShapes = remapBlendShapes(worldMesh.blendShapes, { mood: store.mood })
 
           // Orient head using tracker result in local (physical) space
           localHeadMatrix.fromArray(worldMesh.modelMatrix)

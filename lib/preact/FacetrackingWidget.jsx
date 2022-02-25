@@ -3,7 +3,7 @@ import { Button } from './Button'
 import { Collapsible } from './Collapsible'
 import { SettingsPopup } from './SettingsPopup'
 
-export function FacetrackingWidget({ canvasEl, onPreviewVisibilityChange }) {
+export function FacetrackingWidget({ canvasEl, onPreviewVisibilityChange, onAction }) {
   const canvasContainer = useRef()
 
   const previewReducer = (prevOpenPreview) => {
@@ -35,7 +35,7 @@ export function FacetrackingWidget({ canvasEl, onPreviewVisibilityChange }) {
           </div>
         </Collapsible>
       </div>
-      {openSettings && <SettingsPopup onClose={() => setOpenSettings(false)} />}
+      {openSettings && <SettingsPopup onClose={() => setOpenSettings(false)} onAction={onAction} />}
     </>
   )
 }

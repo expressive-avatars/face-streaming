@@ -31,12 +31,16 @@ function getCredentials() {
 class State {
   // DATA
   trackingStarted = false
-  needsCalibration = true
+  needsCalibrate = {
+    center: true,
+    neutral: false,
+  }
   paused = false
   mood = 0
   previewHidden = false
   hubName = null
   avatarURL = null
+  calibrationNeutral = ref({})
   calibrationOrientation = ref(new THREE.Quaternion())
   subscribers = ref(/** @type {Set<FacetrackingCallback>} */ (new Set()))
   credentials = getCredentials()
@@ -53,8 +57,11 @@ class State {
     })
     socket.on('action', (type) => {
       switch (type) {
-        case 'calibrate':
-          store.calibrate()
+        case 'calibrate_center':
+          this.needsCalibrate.center = true
+          break
+        case 'calibrate_neutral':
+          this.needsCalibrate.neutral = true
           break
       }
     })
@@ -69,7 +76,7 @@ class State {
     return unregister
   }
   calibrate() {
-    this.needsCalibrate = true
+    this.needsCalibrate.center = true
   }
   togglePause() {
     this.paused = !this.paused

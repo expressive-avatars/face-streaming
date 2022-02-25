@@ -5,7 +5,8 @@ import * as THREE from 'three'
 import { useXRSession } from '@/hooks/useXRSession'
 import { useReferenceSpace } from '@/hooks/useReferenceSpace'
 import { store, useStore } from '@/store'
-import { initialBlendShapes, remapBlendShapes } from '@/utils/blendShapes'
+import { applyBlendShapesCalibration, initialBlendShapes, remapBlendShapes } from '@/utils/blendShapes'
+import { ref } from 'valtio'
 
 const localHeadMatrix = new THREE.Matrix4()
 const viewerOrientation = new THREE.Quaternion()
@@ -54,8 +55,6 @@ export function FacetrackingManager({ socket }) {
     if (worldInfo.meshes && localReferenceSpace && viewerReferenceSpace) {
       worldInfo.meshes.forEach((worldMesh) => {
         if (worldMesh.changed && worldMesh.blendShapes && worldMesh.modelMatrix) {
-          const blendShapes = remapBlendShapes(worldMesh.blendShapes, { mood: store.mood })
-
           // Orient head using tracker result in local (physical) space
           localHeadMatrix.fromArray(worldMesh.modelMatrix)
           headOrientation.setFromRotationMatrix(localHeadMatrix)
@@ -72,12 +71,18 @@ export function FacetrackingManager({ socket }) {
           euler.z = -euler.z
           headOrientation.setFromEuler(euler)
 
-          // Calibration
-          if (store.needsCalibrate) {
+          if (store.needsCalibrate.center) {
             store.calibrationOrientation.copy(headOrientation).invert()
-            store.needsCalibrate = false
+            store.needsCalibrate.center = false
           }
           headOrientation.premultiply(store.calibrationOrientation)
+
+          let blendShapes = remapBlendShapes(worldMesh.blendShapes)
+          if (store.needsCalibrate.neutral) {
+            store.calibrationNeutral = ref({ ...blendShapes })
+            store.needsCalibrate.neutral = false
+          }
+          applyBlendShapesCalibration(blendShapes, { neutral: store.calibrationNeutral })
 
           store.subscribers.forEach((callbackFn) => {
             callbackFn(blendShapes, headOrientation)

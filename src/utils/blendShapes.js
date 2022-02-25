@@ -2,20 +2,28 @@
  * @param {BlendShapes} blendShapes
  * @returns {BlendShapes}
  */
-export function remapBlendShapes(blendShapes, { mood }) {
+export function remapBlendShapes(blendShapes) {
   return Object.fromEntries(
     Object.keys(mirrorMap).map((name) => {
       const mirroredName = mirrorMap[name]
       let influence = blendShapes[mirroredName] ?? 0
       influence *= scaling[mirroredName] ?? 1
-      if (mood > 0) {
-        influence += Math.abs(mood) * (positiveBias[mirroredName] ?? 0)
-      } else {
-        influence += Math.abs(mood) * (negativeBias[mirroredName] ?? 0)
-      }
       return [name, influence]
     })
   )
+}
+
+/**
+ *
+ * @param {BlendShapes} blendShapes
+ * @param {{ neutral: Partial<BlendShapes>}}
+ */
+export function applyBlendShapesCalibration(blendShapes, { neutral }) {
+  for (let name in neutral) {
+    if (blendShapesToCalibrate.has(name)) {
+      blendShapes[name] += neutral[name] ?? 0
+    }
+  }
 }
 
 /**
@@ -120,6 +128,8 @@ export const blendShapeNames = /** @type {const} */ ([
   'noseSneerLeft',
   'noseSneerRight',
 ])
+
+const blendShapesToCalibrate = new Set(blendShapeNames.filter((name) => !name.includes('eye')))
 
 /** @type {(name: BlendShapeName) => BlendShapeName} */
 const doMirror = (name) => {

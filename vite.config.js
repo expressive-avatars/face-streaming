@@ -43,7 +43,7 @@ export default defineConfig((configEnv) => {
       esbuild: {
         jsxFactory: 'h',
         jsxFragment: 'Fragment',
-        jsxInject: `import { h } from 'preact'`,
+        jsxInject: `import { h, Fragment } from 'preact'`,
       },
       publicDir: false,
       build: {
